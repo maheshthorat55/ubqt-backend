@@ -16,5 +16,10 @@ spring:
   
   profiles: default
   
+  jackson:
+    serialization:
+            fail-on-empty-beans: false
+  
+  
   application: 
     name: ubqt
