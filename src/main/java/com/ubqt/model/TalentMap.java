@@ -42,6 +42,9 @@ public class TalentMap {
 		private Long id;
 		private int position;
 		private String name;
+		private String shortName;
+		private String aliesName;
+		private Long rating;
 	}
 	
 }

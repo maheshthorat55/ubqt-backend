@@ -35,6 +35,9 @@ public class Skill implements Serializable {
 
 	private String name;
 	private Integer position;
+	private String shortName;
+	private String aliesName;
+	private Long rating;
 	
 	@ManyToOne
 	@JoinColumn(name = "category_id")
