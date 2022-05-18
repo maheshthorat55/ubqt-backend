@@ -1,7 +1,7 @@
 package com.ubqt.entity;
 
-import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,7 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -22,28 +22,27 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "skill_map")
-public class SkillMap implements Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
+@Table(name = "template")
+public class Template {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	private Long id;
+	private long templateId;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "skill_id", referencedColumnName = "id")
-    private Skill skill;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stream_id", referencedColumnName = "id")
-    private Template template;
+	private String name;
 	
-	private Integer proficientLevel;
+	private int defaultTemplate;
+	
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "template_id", referencedColumnName = "id")
+    private Set<User> users;
+	
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "stream_id", referencedColumnName = "id")
+    private Set<SkillMap> skillMap;
+	
+	private Long createdBy;
 	
 	@CreationTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
@@ -52,4 +51,5 @@ public class SkillMap implements Serializable {
 	@UpdateTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modifiedDate;
+	
 }

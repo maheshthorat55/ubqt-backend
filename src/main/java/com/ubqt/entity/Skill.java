@@ -34,9 +34,11 @@ public class Skill implements Serializable {
 	private Long id;
 
 	private String name;
-	private Integer position;
+	private Integer demand;
 	private String shortName;
 	private String aliesName;
+	private String about;
+	private String learnFrom;
 	private Long rating;
 	
 	@ManyToOne

@@ -25,11 +25,12 @@ public class TalentMap {
 	public static class CategoryResponse implements Comparable<CategoryResponse> {
 		private Long id;
 		private String name;
-		private int position;
+		private String shortName;
+		private int demand;
 		List<SkillResponse> skills;
 		@Override
 		public int compareTo(CategoryResponse o) {
-			return this.position - o.position;
+			return o.demand-this.demand;
 		}
 	}
 	
@@ -40,11 +41,11 @@ public class TalentMap {
 	@Builder
 	public static class SkillResponse {
 		private Long id;
-		private int position;
+		private int demand;
 		private String name;
 		private String shortName;
 		private String aliesName;
-		private Long rating;
+		private String about;
 	}
 	
 }

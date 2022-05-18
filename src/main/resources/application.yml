@@ -2,7 +2,9 @@ server:
   port: 8083
   servlet:
     context-path: /api/v1
-  
+
+ubqt:
+  skillSize: 7  
 
 spring: 
   datasource:
