@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -21,8 +22,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import lombok.Data;
+
 @Entity
 @Table(name="user")
+@Data
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +48,12 @@ public class User {
 	
 	private String type;
 	
+	@ManyToOne
+    @JoinColumn(name="template_id", referencedColumnName = "id")
+    private Template template;
+	
+	private Date lastLogin;
+	
 	@ColumnDefault(value = "true")
 	@Generated(GenerationTime.INSERT)
 	private Boolean active;
@@ -56,84 +66,4 @@ public class User {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modifiedDate;
 
-	public long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(long userId) {
-		this.userId = userId;
-	}
-
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
-	public String getMobileNumber() {
-		return mobileNumber;
-	}
-
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getLinkdinId() {
-		return linkdinId;
-	}
-
-	public void setLinkdinId(String linkdinId) {
-		this.linkdinId = linkdinId;
-	}
-
-	public User getReferanceUser() {
-		return referanceUser;
-	}
-
-	public void setReferanceUser(User referanceUser) {
-		this.referanceUser = referanceUser;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public Boolean getActive() {
-		return active;
-	}
-
-	public void setActive(Boolean active) {
-		this.active = active;
-	}
-
-	public Date getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
-
-	public Date getModifiedDate() {
-		return modifiedDate;
-	}
-
-	public void setModifiedDate(Date modifiedDate) {
-		this.modifiedDate = modifiedDate;
-	}
-	
 }

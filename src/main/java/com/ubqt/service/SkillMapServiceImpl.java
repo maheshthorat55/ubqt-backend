@@ -1,50 +1,107 @@
 package com.ubqt.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.ubqt.entity.Category;
 import com.ubqt.entity.Skill;
 import com.ubqt.entity.SkillMap;
-import com.ubqt.model.TalentMap;
+import com.ubqt.entity.Template;
 import com.ubqt.model.TalentMap.CategoryResponse;
 import com.ubqt.model.TalentMap.SkillResponse;
 import com.ubqt.repository.SkillMapRepository;
+import com.ubqt.repository.TemplateRepository;
 import com.ubqt.util.ObjectMapperUtils;
 
 @Service
 public class SkillMapServiceImpl implements SkillMapService {
 
 	@Autowired
-	private SkillMapRepository skillMapRepository; 
+	private SkillMapRepository skillMapRepository;
+
+	@Autowired
+	private TemplateRepository templateRepository;
 	
+	@Value("${ubqt.skillSize}")
+	private int skillSize;
+
 	@Override
-	public TalentMap getTalentMap(Long stream) {
-		List<SkillMap> skillMaps = skillMapRepository.findAllByStreamId(stream);
+	public List<SkillResponse[]> getTalentMap(Long stream) {
+		Template template = templateRepository.findById(stream).get();
+		return getSkillListByTemplate(template);
+	}
+
+	private List<SkillResponse[]> getSkillListByTemplate(Template template) {
+		List<SkillMap> skillMaps = skillMapRepository.findAllByTemplate(template);
 		Map<Category, List<Skill>> categories = skillMaps.stream().map(skillMap -> skillMap.getSkill())
 				.collect(Collectors.groupingBy(Skill::getCategory));
-		TalentMap talentMap = TalentMap.builder().build();
-		talentMap.setStreamId(stream);
+
 		List<CategoryResponse> categoryResponseList = new ArrayList<>();
+
+		int maxSkills = getMaxSkillSize(categories);
+
 		categories.entrySet().forEach(category -> {
 			categoryResponseList.add(CategoryResponse.builder().id(category.getKey().getId())
 					.name(category.getKey().getName()).skills(mapToSkillResponse(category.getValue()))
-					.position(category.getKey().getPosition()).build());
+					.demand(category.getKey().getDemand()).build());
 		});
-		talentMap.setCategories(categoryResponseList.stream().sorted().collect(Collectors.toList()));
-		return talentMap;
-	}
-	
-	private List<SkillResponse> mapToSkillResponse(List<Skill> skills) {
-		return ObjectMapperUtils.mapAll(skills, SkillResponse.class).stream()
-				.sorted(Comparator.comparing(SkillResponse::getPosition)).collect(Collectors.toList());
+
+		List<CategoryResponse> cat = categoryResponseList.stream().sorted().collect(Collectors.toList());
+		List<SkillResponse[]> response = new ArrayList<>();
+		SkillResponse[] SkillTalent = new SkillResponse[cat.size()];
+		for (int i = 0; i < maxSkills; i++) {
+			SkillTalent = new SkillResponse[cat.size()];
+			response.add(SkillTalent);
+		}
+		int index = 0;
+		int indexSkill = 0;
+		SkillTalent = new SkillResponse[cat.size()];
+		for (CategoryResponse categoryResponse : cat) {
+			indexSkill = 0;
+			SkillTalent[index] = new SkillResponse(categoryResponse.getId(), categoryResponse.getDemand(),
+					categoryResponse.getName(), categoryResponse.getShortName(), null, null);
+			for (SkillResponse skill : categoryResponse.getSkills()) {
+				response.get(indexSkill)[index] = skill;
+				indexSkill++;
+			}
+			index++;
+		}
+		if(response.size() > skillSize) {
+			response = response.subList(0, skillSize);
+		}
+		Collections.reverse(response);
+		response.add(SkillTalent);
+		return response;
 	}
 
+	private int getMaxSkillSize(Map<Category, List<Skill>> categories) {
+		int maxSkills = 0;
+		Optional<Entry<Category, List<Skill>>> entry = categories.entrySet().stream()
+				.max(Comparator.comparingInt(value -> value.getValue().size()));
+		if (entry.isPresent()) {
+			maxSkills = entry.get().getValue().size();
+		}
+		return maxSkills;
+	}
+
+	private List<SkillResponse> mapToSkillResponse(List<Skill> skills) {
+		return ObjectMapperUtils.mapAll(skills, SkillResponse.class).stream()
+				.sorted(Comparator.comparing(SkillResponse::getDemand).reversed()).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<SkillResponse[]> getTalentMap(Template template) {
+		return getSkillListByTemplate(template);
+	}
 
 }

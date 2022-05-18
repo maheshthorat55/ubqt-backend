@@ -33,7 +33,9 @@ public class Category implements Serializable {
 	private Long id;
 
 	private String name;
-	private Integer position;
+	private String shortName;
+	private Integer demand;
+	private String color;
 	
 	@CreationTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
