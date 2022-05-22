@@ -56,7 +56,8 @@ public class SkillMapServiceImpl implements SkillMapService {
 		categories.entrySet().forEach(category -> {
 			categoryResponseList.add(CategoryResponse.builder().id(category.getKey().getId())
 					.name(category.getKey().getName()).skills(mapToSkillResponse(category.getValue()))
-					.demand(category.getKey().getDemand()).build());
+					.shortName(category.getKey().getShortName())
+					.demand(category.getKey().getDemand()).color(category.getKey().getColor()).build());
 		});
 
 		List<CategoryResponse> cat = categoryResponseList.stream().sorted().collect(Collectors.toList());
@@ -79,10 +80,18 @@ public class SkillMapServiceImpl implements SkillMapService {
 							.build();
 			for (SkillResponse skill : categoryResponse.getSkills()) {
 				SkillEvaluation skillEvaluation = evaluatedSkills.get(skill.getId());
-				if(skillEvaluation != null) {
+				if(skillEvaluation != null && skillEvaluation.getEvaluation() >0) {
 					skill.setRating(skillEvaluation.getEvaluation());
+					String[]color= StringUtils.split(categoryResponse.getColor(), ",");
+					skill.setColor(color[skillEvaluation.getEvaluation().intValue()-1] );
+					skill.setTextColor("#FFFFFF");
+				}else{
+					skill.setColor("#FFFFFF");
+					skill.setTextColor("#000000");
 				}
-				skill.setColor(StringUtils.split(categoryResponse.getColor(), ","));
+//				skill.setColor();
+//				StringUtils.split(categoryResponse.getColor(), ",")
+//
 				response.get(indexSkill)[index] = skill;
 				indexSkill++;
 			}
