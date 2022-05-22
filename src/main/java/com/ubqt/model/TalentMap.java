@@ -27,6 +27,7 @@ public class TalentMap {
 		private String name;
 		private String shortName;
 		private int demand;
+		private String color;
 		List<SkillResponse> skills;
 		@Override
 		public int compareTo(CategoryResponse o) {
@@ -46,6 +47,8 @@ public class TalentMap {
 		private String shortName;
 		private String aliesName;
 		private String about;
+		private Long rating;
+		private String[] color;
 	}
 	
 }

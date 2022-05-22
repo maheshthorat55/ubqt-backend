@@ -28,6 +28,12 @@ public class UserServieceImpl implements UserService {
 	@Override
 	public UserResponse save(UserRequest userRequest) {
 		User user = modelMapper.map(userRequest, User.class);
+		if(StringUtils.isNumeric(userRequest.getReferanceUserId())) {
+			Optional<User> refUser = userRepository.findById(Long.parseLong(userRequest.getReferanceUserId()));
+			if(refUser.isPresent()) {
+				user.setReferanceUser(refUser.get());
+			}
+		}
 		return modelMapper.map(userRepository.save(user), UserResponse.class);
 	}
 

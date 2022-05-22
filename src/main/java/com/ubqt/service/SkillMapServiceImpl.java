@@ -3,18 +3,21 @@ package com.ubqt.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.ubqt.entity.Category;
 import com.ubqt.entity.Skill;
+import com.ubqt.entity.SkillEvaluation;
 import com.ubqt.entity.SkillMap;
 import com.ubqt.entity.Template;
 import com.ubqt.model.TalentMap.CategoryResponse;
@@ -38,10 +41,10 @@ public class SkillMapServiceImpl implements SkillMapService {
 	@Override
 	public List<SkillResponse[]> getTalentMap(Long stream) {
 		Template template = templateRepository.findById(stream).get();
-		return getSkillListByTemplate(template);
+		return getSkillListByTemplate(template, new HashMap<Long, SkillEvaluation>());
 	}
 
-	private List<SkillResponse[]> getSkillListByTemplate(Template template) {
+	private List<SkillResponse[]> getSkillListByTemplate(Template template, Map<Long, SkillEvaluation> evaluatedSkills) {
 		List<SkillMap> skillMaps = skillMapRepository.findAllByTemplate(template);
 		Map<Category, List<Skill>> categories = skillMaps.stream().map(skillMap -> skillMap.getSkill())
 				.collect(Collectors.groupingBy(Skill::getCategory));
@@ -68,9 +71,18 @@ public class SkillMapServiceImpl implements SkillMapService {
 		SkillTalent = new SkillResponse[cat.size()];
 		for (CategoryResponse categoryResponse : cat) {
 			indexSkill = 0;
-			SkillTalent[index] = new SkillResponse(categoryResponse.getId(), categoryResponse.getDemand(),
-					categoryResponse.getName(), categoryResponse.getShortName(), null, null);
+			SkillTalent[index] = SkillResponse.builder()
+							.id(categoryResponse.getId())
+							.demand(categoryResponse.getDemand())
+							.name(categoryResponse.getName())
+							.shortName(categoryResponse.getShortName())
+							.build();
 			for (SkillResponse skill : categoryResponse.getSkills()) {
+				SkillEvaluation skillEvaluation = evaluatedSkills.get(skill.getId());
+				if(skillEvaluation != null) {
+					skill.setRating(skillEvaluation.getEvaluation());
+				}
+				skill.setColor(StringUtils.split(categoryResponse.getColor(), ","));
 				response.get(indexSkill)[index] = skill;
 				indexSkill++;
 			}
@@ -100,8 +112,9 @@ public class SkillMapServiceImpl implements SkillMapService {
 	}
 
 	@Override
-	public List<SkillResponse[]> getTalentMap(Template template) {
-		return getSkillListByTemplate(template);
+	public List<SkillResponse[]> getTalentMap(Template template, Map<Long, SkillEvaluation> evaluatedSkills) {
+		return getSkillListByTemplate(template, evaluatedSkills);
 	}
+
 
 }
