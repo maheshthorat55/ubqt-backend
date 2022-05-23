@@ -61,6 +61,14 @@ public class UserServieceImpl implements UserService {
 	}
 
 	@Override
+	public Optional<User> findByMobileNumber(String mobileNumber) {
+		Optional<User>  uu=userRepository.findByMobileNumber(mobileNumber);
+		return uu;
+	}
+
+
+
+	@Override
 	public UserResponse updateUser(Long userId, @Valid UserRequest userRequest) {
 		Optional<User> user = findById(userId);
 		if(user.isPresent()) {

@@ -2,15 +2,11 @@ package com.ubqt.controller;
 
 import javax.validation.Valid;
 
+import com.ubqt.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.ubqt.model.UserRequest;
 import com.ubqt.model.UserResponse;
@@ -28,8 +24,14 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(user));
 	}
 	
-	@PutMapping("/{userId}")
+	@PostMapping("/{userId}") // TODO need to change method type
 	public ResponseEntity<UserResponse> updateUser(@PathVariable Long userId, @Valid @RequestBody UserRequest userRequest){
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(userService.updateUser(userId, userRequest));
+	}
+
+	@GetMapping("/{userId}")
+	public ResponseEntity<User> getUser(@PathVariable Long userId){
+
+		return ResponseEntity.status(HttpStatus.OK).body(userService.findById(userId).get());
 	}
 }

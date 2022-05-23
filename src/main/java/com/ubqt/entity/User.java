@@ -50,6 +50,7 @@ public class User {
 	
 	@ManyToOne
     @JoinColumn(name="template_id", referencedColumnName = "id")
+	@JsonBackReference
     private Template template;
 	
 	private Date lastLogin;
@@ -66,4 +67,11 @@ public class User {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modifiedDate;
 
+	private String name;
+	private Double salary;
+	private String currentOrg;
+	private String aboutYou;
+	private String city;
+	private String text1;
+	private String text2;
 }

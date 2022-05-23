@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import com.ubqt.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,9 +26,11 @@ public class LoginController {
 	
 	@PostMapping
 	public ResponseEntity<UserResponse> login(@Valid @RequestBody LoginRequest loginRequest){
-		Optional<UserResponse> user = userService.findUser(loginRequest);
+		Optional<User> user = userService.findByMobileNumber(loginRequest.getMobile());
 		if(user.isPresent()) {
-			return ResponseEntity.ok(user.get());
+			UserResponse u=new UserResponse(); // TODO need to work here temp add this code
+			u.setUserId(user.get().getUserId());
+			return ResponseEntity.ok(u);
 		} else {
 			throw new LoginUnauthorizedException();
 		}

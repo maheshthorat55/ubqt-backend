@@ -16,5 +16,7 @@ public interface UserService {
 
 	Optional<User> findById(Long userId);
 
+	Optional<User> findByMobileNumber(String mobileNumber);
+
 	UserResponse updateUser(Long userId, @Valid UserRequest userRequest);
 }
