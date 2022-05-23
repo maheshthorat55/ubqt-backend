@@ -89,6 +89,7 @@ public class SkillMapServiceImpl implements SkillMapService {
 					skill.setColor("#FFFFFF");
 					skill.setTextColor("#000000");
 				}
+				skill.setColorCodes(StringUtils.split(categoryResponse.getColor(), ","));
 //				skill.setColor();
 //				StringUtils.split(categoryResponse.getColor(), ",")
 //

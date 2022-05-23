@@ -50,6 +50,7 @@ public class TalentMap {
 		private Long rating;
 		private String color;
 		private String textColor;
+		private String [] colorCodes;
 	}
 	
 }
