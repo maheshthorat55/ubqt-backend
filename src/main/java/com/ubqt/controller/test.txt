@@ -4,3 +4,10 @@ http://localhost:8083/api/v1/evaluations
   "evaluation": 2,
   "userId":1
 }
+
+
+Server: sql6.freemysqlhosting.net
+Name: sql6494531
+Username: sql6494531
+Password: SDRTIcMFjS
+Port number: 3306
