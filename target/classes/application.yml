@@ -8,10 +8,10 @@ ubqt:
 
 spring: 
   datasource:
-    url:  jdbc:mysql://localhost:3306/ubqt?autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
+    url:  jdbc:mysql://103.10.234.99:3306/ubqt?autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: test
+    username: ubqt
+    password: ubqt@Fixed2022
   jpa:
     hibernate: 
       ddl-auto: update
