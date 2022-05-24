@@ -35,6 +35,7 @@ public class Category implements Serializable {
 	private String name;
 	private String shortName;
 	private Integer demand;
+	private int position;
 	private String color;
 	
 	@CreationTimestamp

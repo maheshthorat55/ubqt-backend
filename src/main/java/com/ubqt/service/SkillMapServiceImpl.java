@@ -50,7 +50,7 @@ public class SkillMapServiceImpl implements SkillMapService {
 		categories.entrySet().forEach(category -> {
 			categoryResponseList.add(CategoryResponse.builder().id(category.getKey().getId())
 					.name(category.getKey().getName()).skills(mapToSkillResponse(category.getValue()))
-					.shortName(category.getKey().getShortName())
+					.shortName(category.getKey().getShortName()).position(category.getKey().getPosition())
 					.demand(category.getKey().getDemand()).color(category.getKey().getColor()).build());
 		});
 

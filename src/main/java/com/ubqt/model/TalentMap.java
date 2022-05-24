@@ -27,11 +27,12 @@ public class TalentMap {
 		private String name;
 		private String shortName;
 		private int demand;
+		private int position;
 		private String color;
 		List<SkillResponse> skills;
 		@Override
 		public int compareTo(CategoryResponse o) {
-			return o.demand-this.demand;
+			return this.position-o.position;
 		}
 	}
 	
