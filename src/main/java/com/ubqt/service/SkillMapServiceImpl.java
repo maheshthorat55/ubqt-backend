@@ -124,10 +124,10 @@ public class SkillMapServiceImpl implements SkillMapService {
 
 	@Override
 	public List<SkillResponse[]> getHitMap(Template template) {
-		return getHitMapByTemplate(template);
+		return getHitMapByTemplate(template, null);
 	}
 
-	private List<SkillResponse[]> getHitMapByTemplate(Template template) {
+	private List<SkillResponse[]> getHitMapByTemplate(Template template, Map<Long, SkillEvaluation> evaluatedSkills) {
 		List<SkillMap> skillMaps = skillMapRepository.findAllByTemplate(template);
 		
 		
@@ -170,6 +170,12 @@ public class SkillMapServiceImpl implements SkillMapService {
 							.shortName(categoryResponse.getShortName())
 							.build();
 			for (SkillResponse skill : categoryResponse.getSkills()) {
+				if(evaluatedSkills != null) {
+					SkillEvaluation skillEvaluation = evaluatedSkills.get(skill.getId());
+					if(skillEvaluation != null && skillEvaluation.getEvaluation() > 0) {
+						skill.setRating(skillEvaluation.getEvaluation());
+					}
+				}
 				skill.setTextColor("#000000");
 				skill.setColorCodes(StringUtils.split(categoryResponse.getColor(), ","));
 				response.get(indexSkill)[index] = skill;
@@ -187,6 +193,11 @@ public class SkillMapServiceImpl implements SkillMapService {
 		}
 		response.add(SkillTalent);
 		return response;
+	}
+
+	@Override
+	public List<SkillResponse[]> getHitMap(Template template, Map<Long, SkillEvaluation> evaluatedSkills) {
+		return getHitMapByTemplate(template, evaluatedSkills);
 	}
 
 }

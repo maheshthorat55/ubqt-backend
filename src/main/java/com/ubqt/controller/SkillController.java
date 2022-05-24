@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ubqt.entity.SkillEvaluation;
+import com.ubqt.entity.Template;
 import com.ubqt.entity.User;
 import com.ubqt.exception.ResourceNotFound;
 import com.ubqt.model.TalentMap.SkillResponse;
@@ -42,9 +43,32 @@ public class SkillController {
 		Optional<User> userResponse = userService.findById(userId);
 		if(userResponse.isPresent()) {
 			User user = userResponse.get();
-			if(user.getReferanceUser() != null && user.getReferanceUser().getTemplate() != null) {
+			if(user.getTemplate() != null || (user.getReferanceUser() != null && user.getReferanceUser().getTemplate() != null)) {
 				Map<Long, SkillEvaluation> evaluatedSkills = skillEvaluationService.evaluatedSkills(userId);
-				return ResponseEntity.ok(skillMapService.getTalentMap(user.getTemplate(), evaluatedSkills));
+				return ResponseEntity.ok(skillMapService.getTalentMap(getTemplate(user), evaluatedSkills));
+			} else {
+				throw new ResourceNotFound();
+			}
+		} else {
+			throw new ResourceNotFound();
+		}
+	}
+
+	private Template getTemplate(User user) {
+		Template template = user.getTemplate();
+		if(user.getReferanceUser() != null && user.getReferanceUser().getTemplate() != null) {
+			template = user.getReferanceUser().getTemplate();
+		}
+		return template;
+	}
+	
+	@GetMapping("/hit-map/{userId}")
+	public ResponseEntity<List<SkillResponse[]>> getHitMapByUser(@PathVariable Long userId){
+		Optional<User> userResponse = userService.findById(userId);
+		if(userResponse.isPresent()) {
+			User user = userResponse.get();
+			if(user.getTemplate() != null || (user.getReferanceUser() != null && user.getReferanceUser().getTemplate() != null)) {
+				return ResponseEntity.ok(skillMapService.getHitMap(getTemplate(user)));
 			} else {
 				throw new ResourceNotFound();
 			}
@@ -53,13 +77,14 @@ public class SkillController {
 		}
 	}
 	
-	@GetMapping("/hit-map/{userId}")
-	public ResponseEntity<List<SkillResponse[]>> getHitMapByUser(@PathVariable Long userId){
+	@GetMapping("/hit-map-for/{userId}")
+	public ResponseEntity<List<SkillResponse[]>> getHitMapForUser(@PathVariable Long userId){
 		Optional<User> userResponse = userService.findById(userId);
 		if(userResponse.isPresent()) {
 			User user = userResponse.get();
-			if(user.getReferanceUser() != null && user.getReferanceUser().getTemplate() != null) {
-				return ResponseEntity.ok(skillMapService.getHitMap(user.getTemplate()));
+			if(user.getTemplate() != null || (user.getReferanceUser() != null && user.getReferanceUser().getTemplate() != null)) {
+				Map<Long, SkillEvaluation> evaluatedSkills = skillEvaluationService.evaluatedSkills(userId);
+				return ResponseEntity.ok(skillMapService.getHitMap(getTemplate(user), evaluatedSkills));
 			} else {
 				throw new ResourceNotFound();
 			}
