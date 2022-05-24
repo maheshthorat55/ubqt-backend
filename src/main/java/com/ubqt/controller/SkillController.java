@@ -53,4 +53,19 @@ public class SkillController {
 		}
 	}
 	
+	@GetMapping("/hit-map/{userId}")
+	public ResponseEntity<List<SkillResponse[]>> getHitMapByUser(@PathVariable Long userId){
+		Optional<User> userResponse = userService.findById(userId);
+		if(userResponse.isPresent()) {
+			User user = userResponse.get();
+			if(user.getReferanceUser() != null && user.getReferanceUser().getTemplate() != null) {
+				return ResponseEntity.ok(skillMapService.getHitMap(user.getTemplate()));
+			} else {
+				throw new ResourceNotFound();
+			}
+		} else {
+			throw new ResourceNotFound();
+		}
+	}
+	
 }
