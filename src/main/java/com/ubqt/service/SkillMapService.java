@@ -11,4 +11,6 @@ public interface SkillMapService {
 	List<SkillResponse[]> getTalentMap(Long talentMapId);
 	
 	List<SkillResponse[]> getTalentMap(Template template, Map<Long, SkillEvaluation> evaluatedSkills);
+	
+	List<SkillResponse[]> getHitMap(Template template);
 }

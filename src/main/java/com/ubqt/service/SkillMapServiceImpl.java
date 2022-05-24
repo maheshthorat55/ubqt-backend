@@ -18,6 +18,7 @@ import com.ubqt.model.TalentMap.CategoryResponse;
 import com.ubqt.model.TalentMap.SkillResponse;
 import com.ubqt.repository.SkillMapRepository;
 import com.ubqt.repository.TemplateRepository;
+import com.ubqt.util.Constant;
 import com.ubqt.util.ObjectMapperUtils;
 
 @Service
@@ -84,9 +85,6 @@ public class SkillMapServiceImpl implements SkillMapService {
 					skill.setTextColor("#000000");
 				}
 				skill.setColorCodes(StringUtils.split(categoryResponse.getColor(), ","));
-//				skill.setColor();
-//				StringUtils.split(categoryResponse.getColor(), ",")
-//
 				response.get(indexSkill)[index] = skill;
 				indexSkill++;
 			}
@@ -124,5 +122,71 @@ public class SkillMapServiceImpl implements SkillMapService {
 		return getSkillListByTemplate(template, evaluatedSkills);
 	}
 
+	@Override
+	public List<SkillResponse[]> getHitMap(Template template) {
+		return getHitMapByTemplate(template);
+	}
+
+	private List<SkillResponse[]> getHitMapByTemplate(Template template) {
+		List<SkillMap> skillMaps = skillMapRepository.findAllByTemplate(template);
+		
+		
+		List<Skill> skills = skillMaps.stream().map(skillMap -> skillMap.getSkill()).
+							sorted(Comparator.comparing(Skill::getDemand))
+							.collect(Collectors.toList());
+		int hitMapFactor = skills.size() / 16;
+		int index = 0;
+		for (Skill skill : skills) {
+			int hitMapIndex = Math.floorDiv(index, hitMapFactor);
+			skill.setColor(Constant.hitMapColors.get(hitMapIndex > 15 ? 15 : hitMapIndex));
+			index++;
+		}
+		Map<Category, List<Skill>> categories = skills.stream().collect(Collectors.groupingBy(Skill::getCategory));
+		List<CategoryResponse> categoryResponseList = new ArrayList<>();
+		int maxSkills = getMaxSkillSize(categories);
+		categories.entrySet().forEach(category -> {
+			categoryResponseList.add(CategoryResponse.builder().id(category.getKey().getId())
+					.name(category.getKey().getName()).skills(mapToSkillResponse(category.getValue()))
+					.shortName(category.getKey().getShortName())
+					.demand(category.getKey().getDemand()).color(category.getKey().getColor()).build());
+		});
+
+		List<CategoryResponse> cat = categoryResponseList.stream().sorted().collect(Collectors.toList());
+		List<SkillResponse[]> response = new ArrayList<>();
+		SkillResponse[] SkillTalent = new SkillResponse[cat.size()];
+		for (int i = 0; i < maxSkills; i++) {
+			SkillTalent = new SkillResponse[cat.size()];
+			response.add(SkillTalent);
+		}
+		index = 0;
+		int indexSkill = 0;
+		SkillTalent = new SkillResponse[cat.size()];
+		for (CategoryResponse categoryResponse : cat) {
+			indexSkill = 0;
+			SkillTalent[index] = SkillResponse.builder()
+							.id(categoryResponse.getId())
+							.demand(categoryResponse.getDemand())
+							.name(categoryResponse.getName())
+							.shortName(categoryResponse.getShortName())
+							.build();
+			for (SkillResponse skill : categoryResponse.getSkills()) {
+				skill.setTextColor("#000000");
+				skill.setColorCodes(StringUtils.split(categoryResponse.getColor(), ","));
+				response.get(indexSkill)[index] = skill;
+				indexSkill++;
+			}
+			index++;
+		}
+		if(response.size() > skillSize) {
+			response = response.subList(0, skillSize);
+		}
+		Collections.reverse(response);
+		for(SkillResponse sk:SkillTalent){
+			sk.setColor("#595959"); // TODO: will remove hardcoded for category
+			sk.setTextColor("#FFFFFF");
+		}
+		response.add(SkillTalent);
+		return response;
+	}
 
 }
