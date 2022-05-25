@@ -132,8 +132,9 @@ public class SkillMapServiceImpl implements SkillMapService {
 		
 		
 		List<Skill> skills = skillMaps.stream().map(skillMap -> skillMap.getSkill()).
-							sorted(Comparator.comparing(Skill::getDemand))
+							sorted(Comparator.comparing(Skill::getDemand).reversed())
 							.collect(Collectors.toList());
+		
 		int hitMapFactor = skills.size() / 16;
 		int index = 0;
 		for (Skill skill : skills) {
@@ -148,7 +149,9 @@ public class SkillMapServiceImpl implements SkillMapService {
 			categoryResponseList.add(CategoryResponse.builder().id(category.getKey().getId())
 					.name(category.getKey().getName()).skills(mapToSkillResponse(category.getValue()))
 					.shortName(category.getKey().getShortName())
-					.demand(category.getKey().getDemand()).color(category.getKey().getColor()).build());
+					.demand(category.getKey().getDemand())
+					.position(category.getKey().getPosition())
+					.color(category.getKey().getColor()).build());
 		});
 
 		List<CategoryResponse> cat = categoryResponseList.stream().sorted().collect(Collectors.toList());

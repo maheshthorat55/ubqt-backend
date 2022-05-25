@@ -33,6 +33,11 @@ public class UserServieceImpl implements UserService {
 			if(refUser.isPresent()) {
 				user.setReferanceUser(refUser.get());
 			}
+		} else {
+			Optional<User> refUser = userRepository.findById(1L);
+			if(refUser.isPresent()) {
+				user.setReferanceUser(refUser.get());
+			}
 		}
 		return modelMapper.map(userRepository.save(user), UserResponse.class);
 	}
@@ -74,6 +79,7 @@ public class UserServieceImpl implements UserService {
 		if(user.isPresent()) {
 			User userUpdate = modelMapper.map(userRequest, User.class);
 			userUpdate.setUserId(user.get().getUserId());
+			userUpdate.setReferanceUser(user.get().getReferanceUser());
 			return modelMapper.map(userRepository.save(userUpdate), UserResponse.class);
 		} else {
 			throw new ResourceNotFound();
