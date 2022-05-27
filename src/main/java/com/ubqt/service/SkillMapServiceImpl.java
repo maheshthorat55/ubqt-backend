@@ -78,7 +78,7 @@ public class SkillMapServiceImpl implements SkillMapService {
 				if(skillEvaluation != null && skillEvaluation.getEvaluation() >0) {
 					skill.setRating(skillEvaluation.getEvaluation());
 					String[]color= StringUtils.split(categoryResponse.getColor(), ",");
-					skill.setColor(color[skillEvaluation.getEvaluation().intValue()-1] );
+					skill.setColor(color[skillEvaluation.getEvaluation().intValue()] );
 					skill.setTextColor("#FFFFFF");
 				}else{
 					skill.setColor("#FFFFFF");
