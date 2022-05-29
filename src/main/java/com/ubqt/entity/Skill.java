@@ -40,6 +40,7 @@ public class Skill implements Serializable {
 	private String aliesName;
 	private String about;
 	private String learnFrom;
+	private String certificationStatus;
 	private Long rating;
 	
 	@Transient
