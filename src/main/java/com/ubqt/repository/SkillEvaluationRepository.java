@@ -1,6 +1,7 @@
 package com.ubqt.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,5 +12,7 @@ public interface SkillEvaluationRepository extends JpaRepository<SkillEvaluation
 	SkillEvaluation findBySkillIdAndUserId(Long skillId, Long userId);
 
 	List<SkillEvaluation> findAllByUserId(Long userId);
+
+	Set<SkillEvaluation> findAllByskillIdInAndEvaluationGreaterThan(List<Long> skillIds, long l);
 
 }

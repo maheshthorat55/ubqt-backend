@@ -2,6 +2,7 @@ package com.ubqt.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,12 @@ public class SkillEvaluationServiceImpl implements SkillEvaluationService{
 	public Map<Long, SkillEvaluation> evaluatedSkills(Long userId) {
 		List<SkillEvaluation> evaluatedSkills = skillEvaluationRepository.findAllByUserId(userId);
 		return evaluatedSkills.stream().collect(Collectors.toMap(SkillEvaluation::getSkillId, Function.identity()));
+	}
+
+	@Override
+	public Set<Long> getUserIdsHavingSkills(List<Long> skillIds) {
+		return this.skillEvaluationRepository.findAllByskillIdInAndEvaluationGreaterThan(skillIds, 0L).stream().map(s -> s.getUserId())
+				.collect(Collectors.toSet());
 	}
 
 }

@@ -1,6 +1,8 @@
 package com.ubqt.repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -15,5 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long>{
 	Optional<User> findByLinkdinId(String email);
 
 	Optional<User> findByMobileNumber(String mobileNumber);
+
+	List<User> findAllByUserIdIn(Set<Long> userIds);
 
 }

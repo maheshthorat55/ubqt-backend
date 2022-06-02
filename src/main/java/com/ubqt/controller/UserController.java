@@ -1,5 +1,8 @@
 package com.ubqt.controller;
 
+import java.util.List;
+import java.util.Set;
+
 import javax.validation.Valid;
 
 import com.ubqt.entity.User;
@@ -10,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.ubqt.model.UserRequest;
 import com.ubqt.model.UserResponse;
+import com.ubqt.model.UserSearchRequest;
+import com.ubqt.service.SkillEvaluationService;
 import com.ubqt.service.UserService;
 
 @RestController
@@ -18,6 +23,9 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private SkillEvaluationService skillEvaluationService;
 	
 	@PostMapping
 	public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest user){
@@ -32,5 +40,12 @@ public class UserController {
 	@GetMapping("/{userId}")
 	public ResponseEntity<User> getUser(@PathVariable Long userId){
 		return ResponseEntity.status(HttpStatus.OK).body(userService.findById(userId).get());
+	}
+	
+	@PostMapping("/search")
+	public ResponseEntity<List<User>> searchUser(@Valid @RequestBody UserSearchRequest userSearchRequest){
+		Set<Long> userIds = this.skillEvaluationService.getUserIdsHavingSkills(userSearchRequest.getSkillIds());
+		List<User> users = this.userService.getAllUsers(userIds);
+		return ResponseEntity.status(HttpStatus.OK).body(users);
 	}
 }

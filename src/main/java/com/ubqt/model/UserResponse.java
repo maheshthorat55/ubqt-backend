@@ -1,5 +1,10 @@
 package com.ubqt.model;
 
+import java.util.Date;
+
+import lombok.Data;
+
+@Data
 public class UserResponse {
 	private long userId;
 	private String userName;
@@ -10,7 +15,13 @@ public class UserResponse {
 
 	private String name;
 	private Double salary;
-
+	
+	private Integer isAvailable;
+	private String availabilityNotes;
+	private Integer redFlag;
+	private String redFlagNotes;
+	private Integer skillScore;
+	private Date lastAssessed;
 	private String currentOrg;
 	private String aboutYou;
 	private String city;

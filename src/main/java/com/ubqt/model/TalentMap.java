@@ -49,6 +49,7 @@ public class TalentMap {
 		private String aliesName;
 		private String about;
 		private Long rating;
+		private String assessment;
 		private String certificationStatus;
 		private String color;
 		private String textColor;

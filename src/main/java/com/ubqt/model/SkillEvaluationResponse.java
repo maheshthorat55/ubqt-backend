@@ -15,4 +15,7 @@ public class SkillEvaluationResponse {
 	private Long skillId;
 	private Long evaluation;
 	private Long userId;
+	private Integer certificationStatus;
+	private String assessment;
+	private String learnPlan;
 }

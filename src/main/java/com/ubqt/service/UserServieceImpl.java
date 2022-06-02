@@ -1,6 +1,8 @@
 package com.ubqt.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -14,6 +16,7 @@ import com.ubqt.exception.ResourceNotFound;
 import com.ubqt.model.LoginRequest;
 import com.ubqt.model.UserRequest;
 import com.ubqt.model.UserResponse;
+import com.ubqt.model.UserSearchRequest;
 import com.ubqt.repository.UserRepository;
 
 @Service
@@ -84,6 +87,16 @@ public class UserServieceImpl implements UserService {
 		} else {
 			throw new ResourceNotFound();
 		}
+	}
+
+	@Override
+	public List<User> searchUsers(@Valid UserSearchRequest userSearchRequest) {
+		return null;
+	}
+
+	@Override
+	public List<User> getAllUsers(Set<Long> userIds) {
+		return this.userRepository.findAllByUserIdIn(userIds);
 	}
 
 }

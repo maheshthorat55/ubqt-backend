@@ -41,10 +41,26 @@ public class User {
 	
 	private String linkdinId;
 	
+	@ColumnDefault(value = "1")
+	private Integer isAvailable;
+	private String availabilityNotes;
+	@ColumnDefault(value = "0")
+	private Integer redFlag;
+	private String redFlagNotes;
+	
+	private Integer skillScore;
+	
 	@OneToOne
 	@JoinColumn(name = "referance_user", table = "user")
 	@JsonBackReference
 	private User referanceUser;
+	
+	@OneToOne
+	@JoinColumn(name = "career_manager", table = "user")
+	@JsonBackReference
+	private User careerManager;
+	
+	private Date lastAssessed;
 	
 	private String type;
 	
