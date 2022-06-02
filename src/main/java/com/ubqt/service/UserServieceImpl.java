@@ -70,7 +70,7 @@ public class UserServieceImpl implements UserService {
 
 	@Override
 	public Optional<User> findByMobileNumber(String mobileNumber) {
-		Optional<User>  uu=userRepository.findByMobileNumber(mobileNumber);
+		Optional<User> uu=userRepository.findByMobileNumber(mobileNumber);
 		return uu;
 	}
 

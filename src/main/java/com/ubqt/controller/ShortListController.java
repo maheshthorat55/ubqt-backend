@@ -23,7 +23,7 @@ import com.ubqt.service.ShortListService;
 import com.ubqt.service.UserService;
 
 @RestController
-@RequestMapping("shortlists")
+@RequestMapping("/shortlists")
 public class ShortListController {
 	
 	@Autowired
