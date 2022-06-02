@@ -31,8 +31,8 @@ public class ShortList implements Serializable {
 	@Column(name = "id")
 	private Long id;
 
+	private Long clientId;
 	private Long userId;
-	private Long shortListId;
 	
 	@CreationTimestamp
 	@Temporal(TemporalType.TIMESTAMP)

@@ -8,8 +8,8 @@ import com.ubqt.entity.ShortList;
 
 public interface ShortListRepository extends JpaRepository<ShortList, Long> {
 
-	Set<ShortList> findAllByUserId(Long userId);
+	Set<ShortList> findAllByClientId(Long clientId);
 
-	ShortList findByUserIdAndShortListId(Long userId, Long shortListId);
+	ShortList findByClientIdAndUserId(Long clientId, Long userId);
 
 }

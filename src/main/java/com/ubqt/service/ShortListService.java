@@ -6,12 +6,12 @@ import com.ubqt.model.ShortListRequest;
 
 public interface ShortListService {
 
-	void save(ShortListRequest user);
+	void save(ShortListRequest shortList);
 
-	Set<Long> getShortListedUsersFor(Long userId);
+	Set<Long> getShortListedUsersFor(Long clientId);
 
 	void delete(Long id);
 
-	void delete(Long userId, Long shortListId);
+	void delete(Long clientId, Long userId);
 
 }

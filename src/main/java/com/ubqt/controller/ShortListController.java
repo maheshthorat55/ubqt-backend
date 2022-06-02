@@ -38,15 +38,15 @@ public class ShortListController {
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
-	@DeleteMapping("/{userId}/{shortListId}")
-	public ResponseEntity<Void> deleteShortList(@PathVariable Long userId, @PathVariable Long shortListId){
-		this.shortListService.delete(userId, shortListId);
+	@DeleteMapping("/{clientId}/{userId}")
+	public ResponseEntity<Void> deleteShortList(@PathVariable Long clientId, @PathVariable Long userId){
+		this.shortListService.delete(clientId, userId);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
-	@GetMapping("/users/{userId}")
-	public ResponseEntity<List<User>> searchUser(@PathVariable Long userId) {
-		Set<Long> userIds = this.shortListService.getShortListedUsersFor(userId);
+	@GetMapping("/users/{clientId}")
+	public ResponseEntity<List<User>> searchUser(@PathVariable Long clientId) {
+		Set<Long> userIds = this.shortListService.getShortListedUsersFor(clientId);
 		List<User> users = this.userService.getAllUsers(userIds).stream()
 				//.sorted(Comparator.comparing(User::getSkillScore).reversed())
 				.collect(Collectors.toList());

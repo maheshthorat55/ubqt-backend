@@ -22,15 +22,15 @@ public class ShortListServiceImpl implements ShortListService {
 	
 	@Override
 	public void save(ShortListRequest shortListRequest) {
-		ShortList shortList = shortListRepository.findByUserIdAndShortListId(shortListRequest.getUserId(), shortListRequest.getShortListId());
+		ShortList shortList = shortListRepository.findByClientIdAndUserId(shortListRequest.getClientId(), shortListRequest.getUserId());
 		if(shortList == null) {
 			this.shortListRepository.save(this.modelMapper.map(shortListRequest, ShortList.class));
 		}
 	}
 
 	@Override
-	public Set<Long> getShortListedUsersFor(Long userId) {
-		return this.shortListRepository.findAllByUserId(userId).stream().map(s -> s.getShortListId())
+	public Set<Long> getShortListedUsersFor(Long clientId) {
+		return this.shortListRepository.findAllByClientId(clientId).stream().map(s -> s.getUserId())
 				.collect(Collectors.toSet());
 	}
 
@@ -40,8 +40,8 @@ public class ShortListServiceImpl implements ShortListService {
 	}
 
 	@Override
-	public void delete(Long userId, Long shortListId) {
-		ShortList shortList = shortListRepository.findByUserIdAndShortListId(userId, shortListId);
+	public void delete(Long clientId, Long userId) {
+		ShortList shortList = shortListRepository.findByClientIdAndUserId(clientId, userId);
 		if(shortList != null) {
 			this.shortListRepository.delete(shortList);
 		}

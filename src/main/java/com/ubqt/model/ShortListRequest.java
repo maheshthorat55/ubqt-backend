@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ShortListRequest {
+	private Long clientId;
 	private Long userId;
-	private Long shortListId;
 }
