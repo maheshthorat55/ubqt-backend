@@ -22,7 +22,10 @@ spring:
   jackson:
     serialization:
             fail-on-empty-beans: false
-  
-  
   application: 
     name: ubqt
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui-custom.html
+    operations-sorter: method 
