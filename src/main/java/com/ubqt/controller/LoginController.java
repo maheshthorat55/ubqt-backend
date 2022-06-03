@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import com.ubqt.entity.CareerManager;
 import com.ubqt.entity.Client;
 import com.ubqt.entity.User;
 
@@ -16,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ubqt.exception.LoginUnauthorizedException;
+import com.ubqt.model.CareerManagerResponse;
 import com.ubqt.model.ClientResponse;
 import com.ubqt.model.LoginRequest;
 import com.ubqt.model.UserResponse;
+import com.ubqt.service.CareerManagerService;
 import com.ubqt.service.ClientService;
 import com.ubqt.service.UserService;
 
@@ -31,6 +34,9 @@ public class LoginController {
 	
 	@Autowired
 	private ClientService clientService;
+	
+	@Autowired
+	private CareerManagerService careerManagerService;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -52,6 +58,16 @@ public class LoginController {
 		Optional<Client> client = clientService.findByMobileNumber(loginRequest.getMobile());
 		if(client.isPresent()) {
 			return ResponseEntity.ok(this.modelMapper.map(client.get(), ClientResponse.class));
+		} else {
+			throw new LoginUnauthorizedException();
+		}
+	}
+	
+	@PostMapping("/manager")
+	public ResponseEntity<CareerManagerResponse> loginManager(@Valid @RequestBody LoginRequest loginRequest){
+		Optional<CareerManager> client = careerManagerService.findByMobileNumber(loginRequest.getMobile());
+		if(client.isPresent()) {
+			return ResponseEntity.ok(this.modelMapper.map(client.get(), CareerManagerResponse.class));
 		} else {
 			throw new LoginUnauthorizedException();
 		}

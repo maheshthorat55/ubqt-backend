@@ -55,10 +55,10 @@ public class User {
 	@JsonBackReference
 	private User referanceUser;
 	
-	@OneToOne
-	@JoinColumn(name = "career_manager", table = "user")
+	@ManyToOne
+    @JoinColumn(name="career_manager", referencedColumnName = "manager_id")
 	@JsonBackReference
-	private User careerManager;
+	private CareerManager careerManager;
 	
 	private Date lastAssessed;
 	

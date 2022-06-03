@@ -45,7 +45,7 @@ public class ClientServiceImpl implements ClientService {
 	public ClientResponse findById(Long clientId) {
 		Optional<Client> clientOptional = this.clientRepository.findById(clientId);
 		if(clientOptional.isPresent()) {
-			return modelMapper.map(clientRepository.save(clientOptional.get()), ClientResponse.class);
+			return modelMapper.map(clientOptional.get(), ClientResponse.class);
 		} else {
 			throw new ResourceNotFound();
 		}
