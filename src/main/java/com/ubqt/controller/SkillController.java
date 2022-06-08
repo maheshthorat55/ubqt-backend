@@ -21,6 +21,7 @@ import com.ubqt.model.TalentMap.SkillResponse;
 import com.ubqt.service.SkillEvaluationService;
 import com.ubqt.service.SkillMapService;
 import com.ubqt.service.SkillService;
+import com.ubqt.service.TemplateService;
 import com.ubqt.service.UserService;
 
 @RestController
@@ -35,6 +36,9 @@ public class SkillController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private TemplateService templateService;
 	
 	@Autowired
 	private SkillEvaluationService skillEvaluationService;
@@ -60,17 +64,12 @@ public class SkillController {
 		}
 	}
 	
-	@GetMapping("/talent-map-looking-for/{userId}")
-	public ResponseEntity<List<SkillResponse[]>> getTalentMapByUserForLookingFor(@PathVariable Long userId){
-		Optional<User> userResponse = userService.findById(userId);
-		if(userResponse.isPresent()) {
-			User user = userResponse.get();
-			if(user.getTemplate() != null || (user.getReferanceUser() != null && user.getReferanceUser().getTemplate() != null)) {
-				Map<Long, Long> skillSupply = skillEvaluationService.findSkillSuplyCount();
-				return ResponseEntity.ok(skillMapService.getTalentMapWithSupply(getTemplate(user), skillSupply));
-			} else {
-				throw new ResourceNotFound();
-			}
+	@GetMapping("/talent-map-looking-for")
+	public ResponseEntity<List<SkillResponse[]>> getTalentMapByUserForLookingFor(){
+		Template template = templateService.getDefaultTemplate();
+		if (template != null) {
+			Map<Long, Long> skillSupply = skillEvaluationService.findSkillSuplyCount();
+			return ResponseEntity.ok(skillMapService.getTalentMapWithSupply(template, skillSupply));
 		} else {
 			throw new ResourceNotFound();
 		}
