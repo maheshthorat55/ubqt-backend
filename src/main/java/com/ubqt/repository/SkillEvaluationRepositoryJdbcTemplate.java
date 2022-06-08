@@ -18,7 +18,7 @@ public class SkillEvaluationRepositoryJdbcTemplate {
 	private JdbcTemplate jdbcTemplate;
 	 
 	public Map<Long, Long> findSkillSupplies() throws DataAccessException {
-        String sql = "select skill_id, count(skill_id) as supplyCount FROM ubqt.skill_evaluation group by skill_id";
+        String sql = "select skill_id, count(skill_id) as supplyCount FROM skill_evaluation where evaluation > 0 group by skill_id";
         List<SkillSupply> skills = jdbcTemplate.query(
 			        sql,
 			        (rs, rowNum) -> SkillSupply.builder()
