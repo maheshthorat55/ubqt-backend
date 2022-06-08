@@ -7,6 +7,7 @@ import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.ubqt.entity.CareerManager;
 import com.ubqt.entity.User;
 
 @Repository
@@ -19,5 +20,11 @@ public interface UserRepository extends JpaRepository<User, Long>{
 	Optional<User> findByMobileNumber(String mobileNumber);
 
 	List<User> findAllByUserIdIn(Set<Long> userIds);
+
+	List<User> findAllByUserIdInAndAssessed(Set<Long> userIds, int assessed);
+
+	List<User> findAllByOrderByLastAssessedAsc();
+
+	List<User> findAllByCareerManagerOrderByLastAssessedAsc(CareerManager careerManager);
 
 }

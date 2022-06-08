@@ -1,11 +1,15 @@
 package com.ubqt.controller;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.validation.Valid;
 
+import com.ubqt.entity.CareerManager;
 import com.ubqt.entity.User;
+import com.ubqt.exception.ResourceNotFound;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import com.ubqt.model.UserRequest;
 import com.ubqt.model.UserResponse;
 import com.ubqt.model.UserSearchRequest;
+import com.ubqt.service.CareerManagerService;
 import com.ubqt.service.SkillEvaluationService;
 import com.ubqt.service.UserService;
 
@@ -23,6 +28,9 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private CareerManagerService careerManagerService;
 	
 	@Autowired
 	private SkillEvaluationService skillEvaluationService;
@@ -42,10 +50,38 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.findById(userId).get());
 	}
 	
-	@PostMapping("/search")
-	public ResponseEntity<List<User>> searchUser(@Valid @RequestBody UserSearchRequest userSearchRequest){
-		Set<Long> userIds = this.skillEvaluationService.getUserIdsHavingSkills(userSearchRequest.getSkillIds());
+	@PostMapping("/search-by-skills")
+	public ResponseEntity<List<User>> searchUserBySkills(@Valid @RequestBody List<Long> skils){
+		Set<Long> userIds = this.skillEvaluationService.getUserIdsHavingSkills(skils);
 		List<User> users = this.userService.getAllUsers(userIds);
+		return ResponseEntity.status(HttpStatus.OK).body(users);
+	}
+	
+	@PostMapping("/search")
+	public ResponseEntity<List<User>> searchUserBySkillsAndExpert(@Valid @RequestBody UserSearchRequest userSearchRequest){
+		Set<Long> userIds = this.skillEvaluationService.getUserIdsHavingSkillsAndExperts(userSearchRequest.getSkills());
+		List<User> users = null;
+		if(userSearchRequest.getAssessed() == 0) {
+			users = this.userService.getAllUsers(userIds);
+		} else {
+			users = this.userService.getAllUsersAndAssessd(userIds, userSearchRequest.getAssessed());
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(users);
+	}
+	
+	@GetMapping("/for-manager/{managerId}")
+	public ResponseEntity<List<User>> getUsers(@PathVariable Long managerId){
+		List<User> users = null;
+		if(managerId > 0) {
+		  	Optional<CareerManager> careerManager = careerManagerService.findByManagerId(managerId);
+		  	if(careerManager.isPresent()) {
+		  		users = this.userService.getAllUsersByCareerManagerAndOrderByLastAssessed(careerManager.get());
+		  	} else {
+		  		throw new ResourceNotFound();
+		  	}
+		} else {
+			users = this.userService.getAllUsersOrderByLastAssessed();
+		}
 		return ResponseEntity.status(HttpStatus.OK).body(users);
 	}
 }

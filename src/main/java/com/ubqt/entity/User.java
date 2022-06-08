@@ -1,5 +1,6 @@
 package com.ubqt.entity;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -48,6 +49,9 @@ public class User {
 	private Integer redFlag;
 	private String redFlagNotes;
 	
+	@ColumnDefault(value = "0")
+	private Integer assessed;
+	
 	private Integer skillScore;
 	
 	@OneToOne
@@ -57,10 +61,9 @@ public class User {
 	
 	@ManyToOne
     @JoinColumn(name="career_manager", referencedColumnName = "manager_id")
-	@JsonBackReference
 	private CareerManager careerManager;
 	
-	private Date lastAssessed;
+	private LocalDateTime lastAssessed;
 	
 	private String type;
 	

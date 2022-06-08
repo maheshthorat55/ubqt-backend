@@ -54,4 +54,9 @@ public class CareerManagerServiceImpl implements CareerManagerService {
 		return this.careerManagerRepository.findByPhoneNumber(mobile);
 	}
 
+	@Override
+	public Optional<CareerManager> findByManagerId(Long managerId) {
+		return this.careerManagerRepository.findById(managerId);
+	}
+
 }

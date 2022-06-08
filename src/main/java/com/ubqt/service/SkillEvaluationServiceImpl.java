@@ -1,5 +1,9 @@
 package com.ubqt.service;
 
+import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -9,17 +13,30 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
+import com.ubqt.entity.CareerManager;
 import com.ubqt.entity.SkillEvaluation;
+import com.ubqt.exception.FieldNotFoundException;
+import com.ubqt.exception.ResourceNotFound;
+import com.ubqt.model.SearchSkill;
 import com.ubqt.model.SkillEvaluationRequest;
 import com.ubqt.model.SkillEvaluationResponse;
 import com.ubqt.repository.SkillEvaluationRepository;
+import com.ubqt.repository.SkillEvaluationRepositoryJdbcTemplate;
+import com.ubqt.repository.UserRepositorydbcTemplate;
 
 @Service
 public class SkillEvaluationServiceImpl implements SkillEvaluationService{
 
 	@Autowired 
 	private SkillEvaluationRepository skillEvaluationRepository;
+	
+	@Autowired
+	private UserRepositorydbcTemplate userRepositorydbcTemplate;
+	
+	@Autowired
+	private SkillEvaluationRepositoryJdbcTemplate skillEvaluationRepositoryJdbcTemplate;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -46,6 +63,62 @@ public class SkillEvaluationServiceImpl implements SkillEvaluationService{
 	public Set<Long> getUserIdsHavingSkills(List<Long> skillIds) {
 		return this.skillEvaluationRepository.findAllByskillIdInAndEvaluationGreaterThan(skillIds, 0L).stream().map(s -> s.getUserId())
 				.collect(Collectors.toSet());
+	}
+	
+	@Override
+	public Set<Long> getUserIdsHavingSkillsAndExperts(List<SearchSkill> searchSkills) {
+		List<Long> userIds = userRepositorydbcTemplate.findAllUserIds(searchSkills);
+		return new HashSet<>(userIds);
+	}
+
+	@Override
+	public SkillEvaluationResponse certifySkill(CareerManager careerManager,
+			SkillEvaluationRequest skillEvaluationRequest) {
+		SkillEvaluation evaluation = skillEvaluationRepository.findBySkillIdAndUserId(skillEvaluationRequest.getSkillId(), skillEvaluationRequest.getUserId());
+		if(evaluation == null) {
+			throw new ResourceNotFound();
+		} else {
+			evaluation.setEvaluation(skillEvaluationRequest.getEvaluation());
+			evaluation.setCareerManager(careerManager);
+			evaluation.setCertificationStatus(1);
+			evaluation.setLastAssessed(LocalDateTime.now(ZoneOffset.UTC));
+		}
+		evaluation = skillEvaluationRepository.save(evaluation);
+		return this.modelMapper.map(evaluation, SkillEvaluationResponse.class);
+	}
+
+	@Override
+	public SkillEvaluationResponse updateSkill(CareerManager careerManager, Long userId,  Long skillId, Map<Object, Object> fields) {
+		SkillEvaluation evaluation = skillEvaluationRepository.findBySkillIdAndUserId(skillId, userId);
+		if(evaluation == null) {
+			throw new ResourceNotFound();
+		} 
+		fields.forEach((k,v) -> {
+			Field field = ReflectionUtils.findField(SkillEvaluation.class, k.toString());
+			if(field==null) {
+				throw new FieldNotFoundException();
+			}
+			field.setAccessible(true);
+			ReflectionUtils.setField(field, evaluation, getValueForType(field, v));
+		});
+		return this.modelMapper.map(skillEvaluationRepository.save(evaluation), SkillEvaluationResponse.class);
+	}
+
+	private Object getValueForType(Field field, Object v) {
+		if(v==null) {
+			return v;
+		} else if(v.getClass() == field.getType()) {
+			return v;
+		} else if(Long.class.isAssignableFrom(field.getType())) {
+			return Long.valueOf(v.toString());
+		} else {
+			return v;
+		}
+	}
+
+	@Override
+	public Map<Long, Long> findSkillSuplyCount() {
+		return this.skillEvaluationRepositoryJdbcTemplate.findSkillSupplies();
 	}
 
 }

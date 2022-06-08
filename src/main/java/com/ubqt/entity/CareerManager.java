@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import lombok.Data;
 
 @Data
@@ -33,6 +35,7 @@ public class CareerManager {
 	
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "career_manager", referencedColumnName = "manager_id")
+	@JsonBackReference
     private Set<User> users;
 
 }

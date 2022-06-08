@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ubqt.entity.Skill;
 import com.ubqt.entity.SkillEvaluation;
 import com.ubqt.entity.Template;
 import com.ubqt.entity.User;
@@ -18,6 +20,7 @@ import com.ubqt.exception.ResourceNotFound;
 import com.ubqt.model.TalentMap.SkillResponse;
 import com.ubqt.service.SkillEvaluationService;
 import com.ubqt.service.SkillMapService;
+import com.ubqt.service.SkillService;
 import com.ubqt.service.UserService;
 
 @RestController
@@ -26,6 +29,9 @@ public class SkillController {
 
 	@Autowired
 	private SkillMapService skillMapService;
+	
+	@Autowired
+	private SkillService skillService;
 	
 	@Autowired
 	private UserService userService;
@@ -46,6 +52,22 @@ public class SkillController {
 			if(user.getTemplate() != null || (user.getReferanceUser() != null && user.getReferanceUser().getTemplate() != null)) {
 				Map<Long, SkillEvaluation> evaluatedSkills = skillEvaluationService.evaluatedSkills(userId);
 				return ResponseEntity.ok(skillMapService.getTalentMap(getTemplate(user), evaluatedSkills));
+			} else {
+				throw new ResourceNotFound();
+			}
+		} else {
+			throw new ResourceNotFound();
+		}
+	}
+	
+	@GetMapping("/talent-map-looking-for/{userId}")
+	public ResponseEntity<List<SkillResponse[]>> getTalentMapByUserForLookingFor(@PathVariable Long userId){
+		Optional<User> userResponse = userService.findById(userId);
+		if(userResponse.isPresent()) {
+			User user = userResponse.get();
+			if(user.getTemplate() != null || (user.getReferanceUser() != null && user.getReferanceUser().getTemplate() != null)) {
+				Map<Long, Long> skillSupply = skillEvaluationService.findSkillSuplyCount();
+				return ResponseEntity.ok(skillMapService.getTalentMapWithSupply(getTemplate(user), skillSupply));
 			} else {
 				throw new ResourceNotFound();
 			}
@@ -88,6 +110,18 @@ public class SkillController {
 			} else {
 				throw new ResourceNotFound();
 			}
+		} else {
+			throw new ResourceNotFound();
+		}
+	}
+	
+	@PutMapping("/{skillId}")
+	public ResponseEntity<Skill> updateDemandForSkill(@PathVariable Long skillId){
+		Optional<Skill> skill = skillService.findById(skillId);
+		if (skill.isPresent()) {
+			Skill skillEntity = skill.get();
+			skillEntity.setDemand(skillEntity.getDemand() != null ? skillEntity.getDemand() + 1 : 1);
+			return ResponseEntity.ok(skillService.update(skillEntity));
 		} else {
 			throw new ResourceNotFound();
 		}

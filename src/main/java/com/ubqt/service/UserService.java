@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.validation.Valid;
 
+import com.ubqt.entity.CareerManager;
 import com.ubqt.entity.User;
 import com.ubqt.model.LoginRequest;
 import com.ubqt.model.UserRequest;
@@ -26,4 +27,12 @@ public interface UserService {
 	List<User> searchUsers(@Valid UserSearchRequest userSearchRequest);
 
 	List<User> getAllUsers(Set<Long> userIds);
+
+	void updateUser(User user);
+
+	List<User> getAllUsersAndAssessd(Set<Long> userIds, int assessed);
+
+	List<User> getAllUsersOrderByLastAssessed();
+
+	List<User> getAllUsersByCareerManagerAndOrderByLastAssessed(CareerManager careerManager);
 }

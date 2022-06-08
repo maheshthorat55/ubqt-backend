@@ -1,5 +1,7 @@
 package com.ubqt.model;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,4 +20,5 @@ public class SkillEvaluationResponse {
 	private Integer certificationStatus;
 	private String assessment;
 	private String learnPlan;
+	private LocalDateTime lastAssessed;
 }

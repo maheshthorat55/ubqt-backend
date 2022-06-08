@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ubqt.entity.CareerManager;
 import com.ubqt.entity.User;
 import com.ubqt.exception.ResourceNotFound;
 import com.ubqt.model.LoginRequest;
@@ -97,6 +98,26 @@ public class UserServieceImpl implements UserService {
 	@Override
 	public List<User> getAllUsers(Set<Long> userIds) {
 		return this.userRepository.findAllByUserIdIn(userIds);
+	}
+
+	@Override
+	public void updateUser(User user) {
+		userRepository.save(user);
+	}
+
+	@Override
+	public List<User> getAllUsersAndAssessd(Set<Long> userIds, int assessed) {
+		return this.userRepository.findAllByUserIdInAndAssessed(userIds, assessed);
+	}
+
+	@Override
+	public List<User> getAllUsersOrderByLastAssessed() {
+		return this.userRepository.findAllByOrderByLastAssessedAsc();
+	}
+
+	@Override
+	public List<User> getAllUsersByCareerManagerAndOrderByLastAssessed(CareerManager careerManager) {
+		return this.userRepository.findAllByCareerManagerOrderByLastAssessedAsc(careerManager);
 	}
 
 }

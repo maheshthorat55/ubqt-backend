@@ -1,5 +1,6 @@
 package com.ubqt.model;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -44,6 +45,7 @@ public class TalentMap {
 	public static class SkillResponse {
 		private Long id;
 		private int demand;
+		private Long supply;
 		private String name;
 		private String shortName;
 		private String aliesName;
@@ -54,6 +56,7 @@ public class TalentMap {
 		private String color;
 		private String textColor;
 		private String [] colorCodes;
+		private LocalDateTime lastAssessed;
 	}
 	
 }

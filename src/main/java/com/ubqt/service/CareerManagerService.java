@@ -13,6 +13,8 @@ public interface CareerManagerService {
 	CareerManagerResponse updateClient(Long managerId, CareerManagerRequest careerManager);
 
 	CareerManagerResponse findById(Long managerId);
+	
+	Optional<CareerManager> findByManagerId(Long managerId);
 
 	Optional<CareerManager> findByMobileNumber(String mobile);
 

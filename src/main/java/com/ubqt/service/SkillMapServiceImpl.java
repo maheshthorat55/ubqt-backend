@@ -1,7 +1,13 @@
 package com.ubqt.service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -77,6 +83,8 @@ public class SkillMapServiceImpl implements SkillMapService {
 				SkillEvaluation skillEvaluation = evaluatedSkills.get(skill.getId());
 				if(skillEvaluation != null && skillEvaluation.getEvaluation() >0) {
 					skill.setRating(skillEvaluation.getEvaluation());
+					skill.setAssessment(skillEvaluation.getAssessment());
+					skill.setLastAssessed(skillEvaluation.getLastAssessed());
 					String[]color= StringUtils.split(categoryResponse.getColor(), ",");
 					skill.setColor(color[skillEvaluation.getEvaluation().intValue()] );
 					skill.setTextColor("#FFFFFF");
@@ -84,6 +92,65 @@ public class SkillMapServiceImpl implements SkillMapService {
 					skill.setColor("#FFFFFF");
 					skill.setTextColor("#000000");
 				}
+				skill.setColorCodes(StringUtils.split(categoryResponse.getColor(), ","));
+				response.get(indexSkill)[index] = skill;
+				indexSkill++;
+			}
+			index++;
+		}
+		if(response.size() > skillSize) {
+			response = response.subList(0, skillSize);
+		}
+		Collections.reverse(response);
+		for(SkillResponse sk:SkillTalent){
+			sk.setColor("#595959"); // TODO: will remove hardcoded for category
+			sk.setTextColor("#FFFFFF");
+		}
+		response.add(SkillTalent);
+		return response;
+	}
+	
+	private List<SkillResponse[]> getSkillListByTemplateWithSupply(Template template, Map<Long, Long> skillSupply) {
+		List<SkillMap> skillMaps = skillMapRepository.findAllByTemplate(template);
+		Map<Category, List<Skill>> categories = skillMaps.stream().map(skillMap -> skillMap.getSkill())
+				.collect(Collectors.groupingBy(Skill::getCategory));
+
+		List<CategoryResponse> categoryResponseList = new ArrayList<>();
+
+		int maxSkills = getMaxSkillSize(categories);
+
+		categories.entrySet().forEach(category -> {
+			categoryResponseList.add(CategoryResponse.builder().id(category.getKey().getId())
+					.name(category.getKey().getName()).skills(mapToSkillResponse(category.getValue()))
+					.shortName(category.getKey().getShortName()).position(category.getKey().getPosition())
+					.demand(category.getKey().getDemand()).color(category.getKey().getColor()).build());
+		});
+
+		List<CategoryResponse> cat = categoryResponseList.stream().sorted().collect(Collectors.toList());
+		List<SkillResponse[]> response = new ArrayList<>();
+		SkillResponse[] SkillTalent = new SkillResponse[cat.size()];
+		for (int i = 0; i < maxSkills; i++) {
+			SkillTalent = new SkillResponse[cat.size()];
+			response.add(SkillTalent);
+		}
+		int index = 0;
+		int indexSkill = 0;
+		SkillTalent = new SkillResponse[cat.size()];
+		for (CategoryResponse categoryResponse : cat) {
+			indexSkill = 0;
+			SkillTalent[index] = SkillResponse.builder()
+							.id(categoryResponse.getId())
+							.demand(categoryResponse.getDemand())
+							.name(categoryResponse.getName())
+							.shortName(categoryResponse.getShortName())
+							.build();
+			for (SkillResponse skill : categoryResponse.getSkills()) {
+				Long supplyCount = skillSupply.get(skill.getId());
+				if(supplyCount != null) {
+					skill.setSupply(supplyCount);
+				}
+				skill.setColor("#FFFFFF");
+				skill.setTextColor("#000000");
 				skill.setColorCodes(StringUtils.split(categoryResponse.getColor(), ","));
 				response.get(indexSkill)[index] = skill;
 				indexSkill++;
@@ -129,8 +196,6 @@ public class SkillMapServiceImpl implements SkillMapService {
 
 	private List<SkillResponse[]> getHitMapByTemplate(Template template, Map<Long, SkillEvaluation> evaluatedSkills) {
 		List<SkillMap> skillMaps = skillMapRepository.findAllByTemplate(template);
-		
-		
 		List<Skill> skills = skillMaps.stream().map(skillMap -> skillMap.getSkill()).
 							sorted(Comparator.comparing(Skill::getDemand).reversed())
 							.collect(Collectors.toList());
@@ -201,6 +266,11 @@ public class SkillMapServiceImpl implements SkillMapService {
 	@Override
 	public List<SkillResponse[]> getHitMap(Template template, Map<Long, SkillEvaluation> evaluatedSkills) {
 		return getHitMapByTemplate(template, evaluatedSkills);
+	}
+
+	@Override
+	public List<SkillResponse[]> getTalentMapWithSupply(Template template, Map<Long, Long> skillSupply) {
+		return getSkillListByTemplateWithSupply(template, skillSupply);
 	}
 
 }
