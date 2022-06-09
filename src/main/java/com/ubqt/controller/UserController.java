@@ -92,7 +92,7 @@ public class UserController {
 	}
 	
 	@PutMapping("/update/{userId}")
-	public ResponseEntity<User> updateSkill(@PathVariable Long userId, @RequestBody Map<Object, Object> fields) {
+	public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody Map<Object, Object> fields) {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userId, fields));
 	}
 }
