@@ -1,20 +1,26 @@
 package com.ubqt.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import javax.validation.Valid;
 
-import com.ubqt.entity.CareerManager;
-import com.ubqt.entity.User;
-import com.ubqt.exception.ResourceNotFound;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.ubqt.entity.CareerManager;
+import com.ubqt.entity.User;
+import com.ubqt.exception.ResourceNotFound;
 import com.ubqt.model.UserRequest;
 import com.ubqt.model.UserResponse;
 import com.ubqt.model.UserSearchRequest;
@@ -83,5 +89,10 @@ public class UserController {
 			users = this.userService.getAllUsersOrderByLastAssessed();
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(users);
+	}
+	
+	@PutMapping("/update/{userId}")
+	public ResponseEntity<User> updateSkill(@PathVariable Long userId, @RequestBody Map<Object, Object> fields) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userId, fields));
 	}
 }

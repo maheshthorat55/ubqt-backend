@@ -1,6 +1,7 @@
 package com.ubqt.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -35,4 +36,6 @@ public interface UserService {
 	List<User> getAllUsersOrderByLastAssessed();
 
 	List<User> getAllUsersByCareerManagerAndOrderByLastAssessed(CareerManager careerManager);
+
+	User updateUser(Long userId, Map<Object, Object> fields);
 }

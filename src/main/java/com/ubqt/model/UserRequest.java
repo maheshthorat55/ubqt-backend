@@ -1,5 +1,8 @@
 package com.ubqt.model;
 
+import lombok.Data;
+
+@Data
 public class UserRequest {
 	private String userName;
 	private String mobileNumber;
@@ -7,16 +10,14 @@ public class UserRequest {
 	private String linkdinId;
 	private String type;
 	private String referanceUserId;
-
 	private String name;
 	private Double salary;
-
 	private String currentOrg;
 	private String aboutYou;
 	private String city;
 	private String text1;
 	private String text2;
-
+	
 	public String getName() {
 		return name;
 	}

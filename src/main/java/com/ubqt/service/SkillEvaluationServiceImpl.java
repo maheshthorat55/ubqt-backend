@@ -99,7 +99,9 @@ public class SkillEvaluationServiceImpl implements SkillEvaluationService{
 				throw new FieldNotFoundException();
 			}
 			field.setAccessible(true);
-			ReflectionUtils.setField(field, evaluation, getValueForType(field, v));
+			if(v != null) {
+				ReflectionUtils.setField(field, evaluation, getValueForType(field, v));
+			}
 		});
 		return this.modelMapper.map(skillEvaluationRepository.save(evaluation), SkillEvaluationResponse.class);
 	}

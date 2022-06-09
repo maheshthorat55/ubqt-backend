@@ -1,6 +1,8 @@
 package com.ubqt.service;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -10,9 +12,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 import com.ubqt.entity.CareerManager;
 import com.ubqt.entity.User;
+import com.ubqt.exception.FieldNotFoundException;
 import com.ubqt.exception.ResourceNotFound;
 import com.ubqt.model.LoginRequest;
 import com.ubqt.model.UserRequest;
@@ -84,6 +88,14 @@ public class UserServieceImpl implements UserService {
 			User userUpdate = modelMapper.map(userRequest, User.class);
 			userUpdate.setUserId(user.get().getUserId());
 			userUpdate.setReferanceUser(user.get().getReferanceUser());
+			userUpdate.setCareerManager(user.get().getCareerManager());
+			userUpdate.setIsAvailable(user.get().getIsAvailable());
+			userUpdate.setAvailabilityNotes(user.get().getAvailabilityNotes());
+			userUpdate.setRedFlag(user.get().getRedFlag());
+			userUpdate.setRedFlagNotes(user.get().getRedFlagNotes());
+			userUpdate.setAssessed(user.get().getAssessed());
+			userUpdate.setSkillScore(user.get().getSkillScore());
+			userUpdate.setLastAssessed(user.get().getLastAssessed());
 			return modelMapper.map(userRepository.save(userUpdate), UserResponse.class);
 		} else {
 			throw new ResourceNotFound();
@@ -118,6 +130,38 @@ public class UserServieceImpl implements UserService {
 	@Override
 	public List<User> getAllUsersByCareerManagerAndOrderByLastAssessed(CareerManager careerManager) {
 		return this.userRepository.findAllByCareerManagerOrderByLastAssessedAsc(careerManager);
+	}
+
+	@Override
+	public User updateUser(Long userId, Map<Object, Object> fields) {
+		Optional<User> user = findById(userId);
+		if(!user.isPresent()) {
+			throw new ResourceNotFound();
+		} 
+		User userEntity = user.get();
+		fields.forEach((k,v) -> {
+			Field field = ReflectionUtils.findField(User.class, k.toString());
+			if(field==null) {
+				throw new FieldNotFoundException();
+			}
+			field.setAccessible(true);
+			if(v != null) {
+				ReflectionUtils.setField(field, userEntity, getValueForType(field, v));
+			}
+		});
+		return userRepository.save(userEntity);
+	}
+	
+	private Object getValueForType(Field field, Object v) {
+		if(v==null) {
+			return v;
+		} else if(v.getClass() == field.getType()) {
+			return v;
+		} else if(Long.class.isAssignableFrom(field.getType())) {
+			return Long.valueOf(v.toString());
+		} else {
+			return v;
+		}
 	}
 
 }
