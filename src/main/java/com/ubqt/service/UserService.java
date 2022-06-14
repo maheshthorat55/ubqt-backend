@@ -38,4 +38,8 @@ public interface UserService {
 	List<User> getAllUsersByCareerManagerAndOrderByLastAssessed(CareerManager careerManager);
 
 	User updateUser(Long userId, Map<Object, Object> fields);
+
+	User create(UserRequest userRequest);
+
+	void saveToRepository(User userEntity);
 }

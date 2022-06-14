@@ -18,4 +18,6 @@ public interface CareerManagerService {
 
 	Optional<CareerManager> findByMobileNumber(String mobile);
 
+	CareerManager create(CareerManagerRequest careerManagerRequest);
+
 }

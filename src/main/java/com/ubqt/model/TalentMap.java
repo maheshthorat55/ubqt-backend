@@ -52,11 +52,13 @@ public class TalentMap {
 		private String about;
 		private Long rating;
 		private String assessment;
+		private String learnFrom;
 		private String certificationStatus;
 		private String color;
 		private String textColor;
 		private String [] colorCodes;
 		private LocalDateTime lastAssessed;
+		private Long experience;
 	}
 	
 }

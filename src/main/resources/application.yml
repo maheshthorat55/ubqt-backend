@@ -25,6 +25,13 @@ spring:
   application: 
     name: ubqt
 
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
+        
+        
+
 springdoc:
   swagger-ui:
     path: /swagger-ui-custom.html

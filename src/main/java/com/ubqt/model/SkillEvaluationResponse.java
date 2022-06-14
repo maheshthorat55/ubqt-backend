@@ -21,4 +21,5 @@ public class SkillEvaluationResponse {
 	private String assessment;
 	private String learnPlan;
 	private LocalDateTime lastAssessed;
+	private Long experience;
 }

@@ -83,14 +83,17 @@ public class SkillMapServiceImpl implements SkillMapService {
 				SkillEvaluation skillEvaluation = evaluatedSkills.get(skill.getId());
 				if(skillEvaluation != null && skillEvaluation.getEvaluation() >0) {
 					skill.setRating(skillEvaluation.getEvaluation());
+					skill.setExperience(skillEvaluation.getExperience());
 					skill.setAssessment(skillEvaluation.getAssessment());
 					skill.setLastAssessed(skillEvaluation.getLastAssessed());
 					String[]color= StringUtils.split(categoryResponse.getColor(), ",");
 					skill.setColor(color[skillEvaluation.getEvaluation().intValue()] );
 					skill.setTextColor("#FFFFFF");
+					skill.setCertificationStatus(skillEvaluation.getCertificationStatus() != null && skillEvaluation.getCertificationStatus() > 0 ? "Yes": "No");
 				}else{
 					skill.setColor("#FFFFFF");
 					skill.setTextColor("#000000");
+					skill.setCertificationStatus("No");
 				}
 				skill.setColorCodes(StringUtils.split(categoryResponse.getColor(), ","));
 				response.get(indexSkill)[index] = skill;
@@ -242,6 +245,7 @@ public class SkillMapServiceImpl implements SkillMapService {
 					SkillEvaluation skillEvaluation = evaluatedSkills.get(skill.getId());
 					if(skillEvaluation != null && skillEvaluation.getEvaluation() > 0) {
 						skill.setRating(skillEvaluation.getEvaluation());
+						skill.setExperience(skillEvaluation.getExperience());
 					}
 				}
 				skill.setTextColor("#000000");

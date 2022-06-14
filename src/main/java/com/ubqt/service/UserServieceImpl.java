@@ -164,4 +164,26 @@ public class UserServieceImpl implements UserService {
 		}
 	}
 
+	@Override
+	public User create(UserRequest userRequest) {
+		User user = modelMapper.map(userRequest, User.class);
+		if(StringUtils.isNumeric(userRequest.getReferanceUserId())) {
+			Optional<User> refUser = userRepository.findById(Long.parseLong(userRequest.getReferanceUserId()));
+			if(refUser.isPresent()) {
+				user.setReferanceUser(refUser.get());
+			}
+		} else {
+			Optional<User> refUser = userRepository.findById(1L);
+			if(refUser.isPresent()) {
+				user.setReferanceUser(refUser.get());
+			}
+		}
+		return userRepository.save(user);
+	}
+
+	@Override
+	public void saveToRepository(User userEntity) {
+		userRepository.save(userEntity);
+	}
+
 }

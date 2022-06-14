@@ -33,6 +33,7 @@ public class SkillEvaluation {
 	private Long skillId;
 	private Long evaluation;
 	private Long userId;
+	private Long experience;
 	
 	@ColumnDefault(value = "0")
 	private Integer certificationStatus;

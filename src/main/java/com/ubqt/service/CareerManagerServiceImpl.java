@@ -32,6 +32,7 @@ public class CareerManagerServiceImpl implements CareerManagerService {
 		Optional<CareerManager> careerManagerEntity = careerManagerRepository.findById(managerId);
 		if(careerManagerEntity.isPresent()) {
 			CareerManager careerManagerUpdate = modelMapper.map(careerManager, CareerManager.class);
+			careerManagerUpdate.setUsers(careerManagerEntity.get().getUsers());
 			careerManagerUpdate.setManagerId(careerManagerEntity.get().getManagerId());
 			return modelMapper.map(this.careerManagerRepository.save(careerManagerUpdate), CareerManagerResponse.class);
 		} else {
@@ -57,6 +58,12 @@ public class CareerManagerServiceImpl implements CareerManagerService {
 	@Override
 	public Optional<CareerManager> findByManagerId(Long managerId) {
 		return this.careerManagerRepository.findById(managerId);
+	}
+
+	@Override
+	public CareerManager create(CareerManagerRequest careerManagerRequest) {
+		CareerManager careerManagerEntity = modelMapper.map(careerManagerRequest, CareerManager.class);
+		return this.careerManagerRepository.save(careerManagerEntity);
 	}
 
 }

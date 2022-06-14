@@ -25,4 +25,6 @@ public interface SkillEvaluationService {
 			Map<Object, Object> fields);
 
 	Map<Long, Long> findSkillSuplyCount();
+
+	SkillEvaluationResponse updateSkillForUser(Long userId, Long skillId, Map<Object, Object> fields);
 }

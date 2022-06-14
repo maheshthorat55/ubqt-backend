@@ -80,5 +80,12 @@ public class SkillEvaluationController {
 			throw new ResourceNotFound();
 		}
 	}
+	
+	@PutMapping("/for-user/{userId}/{skillId}")
+	public ResponseEntity<SkillEvaluationResponse> updateSkillForUser(@PathVariable Long userId, @PathVariable Long skillId, 
+				@RequestBody Map<Object, Object> fields) {
+			SkillEvaluationResponse response = this.skillEvaluationService.updateSkillForUser(userId, skillId, fields);
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
 
 }
