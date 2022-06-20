@@ -1,5 +1,6 @@
 package com.ubqt.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -64,6 +65,11 @@ public class CareerManagerServiceImpl implements CareerManagerService {
 	public CareerManager create(CareerManagerRequest careerManagerRequest) {
 		CareerManager careerManagerEntity = modelMapper.map(careerManagerRequest, CareerManager.class);
 		return this.careerManagerRepository.save(careerManagerEntity);
+	}
+
+	@Override
+	public List<CareerManager> findAll() {
+		return this.careerManagerRepository.findAll();
 	}
 
 }

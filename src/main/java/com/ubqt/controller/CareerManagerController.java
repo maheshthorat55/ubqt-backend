@@ -1,5 +1,7 @@
 package com.ubqt.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ubqt.entity.CareerManager;
 import com.ubqt.model.CareerManagerRequest;
 import com.ubqt.model.CareerManagerResponse;
 import com.ubqt.service.CareerManagerService;
@@ -37,5 +40,10 @@ public class CareerManagerController {
 	@GetMapping("/{managerId}")
 	public ResponseEntity<CareerManagerResponse> getUser(@PathVariable Long managerId){
 		return ResponseEntity.status(HttpStatus.OK).body(careerManagerService.findById(managerId));
+	}
+	
+	@GetMapping
+	public ResponseEntity<List<CareerManager>> getAllCareerManager(){
+		return ResponseEntity.status(HttpStatus.OK).body(careerManagerService.findAll());
 	}
 }

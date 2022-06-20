@@ -42,4 +42,6 @@ public interface UserService {
 	User create(UserRequest userRequest);
 
 	void saveToRepository(User userEntity);
+
+	void deleteUserByNumber(String phoneNumber);
 }

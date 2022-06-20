@@ -1,5 +1,6 @@
 package com.ubqt.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.ubqt.entity.CareerManager;
@@ -19,5 +20,7 @@ public interface CareerManagerService {
 	Optional<CareerManager> findByMobileNumber(String mobile);
 
 	CareerManager create(CareerManagerRequest careerManagerRequest);
+
+	List<CareerManager> findAll();
 
 }

@@ -79,8 +79,6 @@ public class UserServieceImpl implements UserService {
 		return uu;
 	}
 
-
-
 	@Override
 	public UserResponse updateUser(Long userId, @Valid UserRequest userRequest) {
 		Optional<User> user = findById(userId);
@@ -184,6 +182,18 @@ public class UserServieceImpl implements UserService {
 	@Override
 	public void saveToRepository(User userEntity) {
 		userRepository.save(userEntity);
+	}
+
+	@Override
+	public void deleteUserByNumber(String phoneNumber) {
+		Optional<User> userOptional = userRepository.findByMobileNumber(phoneNumber);
+		if(userOptional.isPresent()) {
+			User user = userOptional.get();
+			user.setCareerManager(null);
+			user.setReferanceUser(null);
+			user = this.userRepository.save(user);
+			this.userRepository.delete(user);
+		}
 	}
 
 }

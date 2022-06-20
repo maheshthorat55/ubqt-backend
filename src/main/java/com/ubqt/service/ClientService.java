@@ -1,5 +1,6 @@
 package com.ubqt.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -17,5 +18,7 @@ public interface ClientService {
 	ClientResponse findById(Long clientId);
 
 	Optional<Client> findByMobileNumber(String mobile);
+
+	List<Client> findAll();
 
 }

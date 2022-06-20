@@ -2,6 +2,7 @@ package com.ubqt.entity;
 
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -33,7 +34,7 @@ public class CareerManager {
 	private String partner;
 	private String power;
 	
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "career_manager", referencedColumnName = "manager_id")
 	@JsonBackReference
     private Set<User> users;

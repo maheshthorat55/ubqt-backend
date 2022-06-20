@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,6 +55,17 @@ public class UserController {
 	@GetMapping("/{userId}")
 	public ResponseEntity<User> getUser(@PathVariable Long userId){
 		return ResponseEntity.status(HttpStatus.OK).body(userService.findById(userId).get());
+	}
+	
+	@GetMapping
+	public ResponseEntity<List<User>> getAllUser(){
+		return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsersOrderByLastAssessed());
+	}
+	
+	@DeleteMapping("/{phoneNumber}")
+	public ResponseEntity<Void> deleteUserByPhoneNumber(@PathVariable String phoneNumber){
+		userService.deleteUserByNumber(phoneNumber);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 	
 	@PostMapping("/search-by-skills")

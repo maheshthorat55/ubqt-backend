@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -93,6 +95,10 @@ public class SkillEvaluationServiceImpl implements SkillEvaluationService{
 		SkillEvaluation evaluation = skillEvaluationRepository.findBySkillIdAndUserId(skillId, userId);
 		if(evaluation == null) {
 			SkillEvaluation creatEvaluation = new SkillEvaluation();
+			creatEvaluation.setUserId(userId);
+			creatEvaluation.setSkillId(skillId);
+			creatEvaluation.setCareerManager(careerManager);
+			creatEvaluation.setCertificationStatus(1);
 			fields.forEach((k,v) -> {
 				Field field = ReflectionUtils.findField(SkillEvaluation.class, k.toString());
 				if(field==null) {
@@ -118,8 +124,7 @@ public class SkillEvaluationServiceImpl implements SkillEvaluationService{
 			});
 			evaluation.setLastAssessed(LocalDateTime.now(ZoneOffset.UTC));
 			return this.modelMapper.map(skillEvaluationRepository.save(evaluation), SkillEvaluationResponse.class);
-		}
-		
+		}		
 	}
 
 	private Object getValueForType(Field field, Object v) {
@@ -168,6 +173,24 @@ public class SkillEvaluationServiceImpl implements SkillEvaluationService{
 			});
 			return this.modelMapper.map(skillEvaluationRepository.save(evaluation), SkillEvaluationResponse.class);
 		}
+	}
+
+	@Override
+	public void addAll(@Valid List<SkillEvaluationRequest> skillEvaluationRequests) {
+		skillEvaluationRequests.forEach(skillEvaluationRequest -> {
+			SkillEvaluation evaluation = skillEvaluationRepository.findBySkillIdAndUserId(skillEvaluationRequest.getSkillId(), skillEvaluationRequest.getUserId());
+			if(evaluation == null) {
+				evaluation = new SkillEvaluation();
+				evaluation.setCertificationStatus(1);
+				evaluation.setSkillId(skillEvaluationRequest.getSkillId());
+				evaluation.setEvaluation(skillEvaluationRequest.getEvaluation());
+			} else {
+				evaluation.setEvaluation(skillEvaluationRequest.getEvaluation());
+				evaluation.setCertificationStatus(1);
+				evaluation.setLastAssessed(LocalDateTime.now(ZoneOffset.UTC));
+			}
+			this.skillEvaluationRepository.save(evaluation);		
+		});
 	}
 
 }

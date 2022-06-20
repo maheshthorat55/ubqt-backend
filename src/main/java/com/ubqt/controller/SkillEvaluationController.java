@@ -2,6 +2,7 @@ package com.ubqt.controller;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -86,6 +87,12 @@ public class SkillEvaluationController {
 				@RequestBody Map<Object, Object> fields) {
 			SkillEvaluationResponse response = this.skillEvaluationService.updateSkillForUser(userId, skillId, fields);
 			return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+	
+	@PostMapping("/bulk-update")
+	public ResponseEntity<Void> updateBulk(@Valid @RequestBody List<SkillEvaluationRequest> skillEvaluationRequest) {
+		skillEvaluationService.addAll(skillEvaluationRequest);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 }

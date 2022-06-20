@@ -1,5 +1,6 @@
 package com.ubqt.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -54,6 +55,11 @@ public class ClientServiceImpl implements ClientService {
 	@Override
 	public Optional<Client> findByMobileNumber(String mobile) {
 		return this.clientRepository.findByPhoneNumber(mobile);
+	}
+
+	@Override
+	public List<Client> findAll() {
+		return this.clientRepository.findAll();
 	}
 
 }

@@ -1,5 +1,7 @@
 package com.ubqt.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ubqt.entity.Client;
 import com.ubqt.model.ClientRequest;
 import com.ubqt.model.ClientResponse;
 import com.ubqt.service.ClientService;
@@ -37,6 +40,11 @@ public class ClientController {
 	@GetMapping("/{clientId}")
 	public ResponseEntity<ClientResponse> getUser(@PathVariable Long clientId){
 		return ResponseEntity.status(HttpStatus.OK).body(clientService.findById(clientId));
+	}
+	
+	@GetMapping()
+	public ResponseEntity<List<Client>> getAllClients(@PathVariable Long clientId){
+		return ResponseEntity.status(HttpStatus.OK).body(clientService.findAll());
 	}
 
 }

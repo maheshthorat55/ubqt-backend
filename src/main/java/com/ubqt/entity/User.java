@@ -3,6 +3,7 @@ package com.ubqt.entity;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -59,7 +60,7 @@ public class User {
 	@JsonBackReference
 	private User referanceUser;
 	
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="career_manager", referencedColumnName = "manager_id")
 	private CareerManager careerManager;
 	
