@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,6 +41,12 @@ public class CareerManagerController {
 	@GetMapping("/{managerId}")
 	public ResponseEntity<CareerManagerResponse> getUser(@PathVariable Long managerId){
 		return ResponseEntity.status(HttpStatus.OK).body(careerManagerService.findById(managerId));
+	}
+	
+	@DeleteMapping("/{phoneNumber}")
+	public ResponseEntity<Void> deleteCareerManager(@PathVariable String phoneNumber){
+		careerManagerService.deleteByPhoneNumber(phoneNumber);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 	
 	@GetMapping

@@ -29,4 +29,9 @@ public class SkillEvaluationRepositoryJdbcTemplate {
                 Collectors.toMap(x -> x.getSkillId(), x -> x.getSkillSupplyCount()));
 		
     }
+	
+	public void updateSkillScore(Long userId) {
+		String sql = "update user set skill_score = (select sum(ifnull(score, 0)) FROM ubqt.skill_evaluation where user_id = ?) where user_id = ?";
+		jdbcTemplate.update(sql, userId, userId);
+	}
 }

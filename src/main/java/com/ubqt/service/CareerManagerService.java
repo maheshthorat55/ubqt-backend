@@ -23,4 +23,8 @@ public interface CareerManagerService {
 
 	List<CareerManager> findAll();
 
+	void deleteById(Long managerId);
+
+	void deleteByPhoneNumber(String phoneNumber);
+
 }

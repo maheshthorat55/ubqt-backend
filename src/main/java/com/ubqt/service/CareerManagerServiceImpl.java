@@ -72,4 +72,17 @@ public class CareerManagerServiceImpl implements CareerManagerService {
 		return this.careerManagerRepository.findAll();
 	}
 
+	@Override
+	public void deleteById(Long managerId) {
+		this.careerManagerRepository.deleteById(managerId);
+	}
+
+	@Override
+	public void deleteByPhoneNumber(String phoneNumber) {
+		Optional<CareerManager> opManager = findByMobileNumber(phoneNumber);
+		if(opManager.isPresent()) {
+			this.careerManagerRepository.delete(opManager.get());
+		}
+	}
+
 }

@@ -6,6 +6,7 @@ import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
 import com.ubqt.entity.CareerManager;
+import com.ubqt.entity.Skill;
 import com.ubqt.entity.SkillEvaluation;
 import com.ubqt.exception.FieldNotFoundException;
 import com.ubqt.exception.ResourceNotFound;
@@ -43,6 +45,9 @@ public class SkillEvaluationServiceImpl implements SkillEvaluationService{
 	@Autowired
 	private ModelMapper modelMapper;
 	
+	@Autowired
+	private SkillService skillService;
+	
 	@Override
 	public SkillEvaluationResponse save(SkillEvaluationRequest skillEvaluationRequest) {
 		SkillEvaluation evaluation = skillEvaluationRepository.findBySkillIdAndUserId(skillEvaluationRequest.getSkillId(), skillEvaluationRequest.getUserId());
@@ -52,6 +57,8 @@ public class SkillEvaluationServiceImpl implements SkillEvaluationService{
 			evaluation.setEvaluation(skillEvaluationRequest.getEvaluation());
 			evaluation.setCertificationStatus(0);
 		}
+		Integer score = getSkillScore(skillEvaluationRequest.getSkillId(), evaluation.getExperience(), evaluation.getEvaluation());
+		evaluation.setScore(score);
 		evaluation = skillEvaluationRepository.save(evaluation);
 		return this.modelMapper.map(evaluation, SkillEvaluationResponse.class);
 	}
@@ -73,6 +80,11 @@ public class SkillEvaluationServiceImpl implements SkillEvaluationService{
 		List<Long> userIds = userRepositorydbcTemplate.findAllUserIds(searchSkills);
 		return new HashSet<>(userIds);
 	}
+	
+	@Override
+	public void updateSkillScore(Long userId) {
+		skillEvaluationRepositoryJdbcTemplate.updateSkillScore(userId);
+	}
 
 	@Override
 	public SkillEvaluationResponse certifySkill(CareerManager careerManager,
@@ -84,6 +96,8 @@ public class SkillEvaluationServiceImpl implements SkillEvaluationService{
 			evaluation.setEvaluation(skillEvaluationRequest.getEvaluation());
 			evaluation.setCareerManager(careerManager);
 			evaluation.setCertificationStatus(1);
+			Integer score = getSkillScore(skillEvaluationRequest.getSkillId(), evaluation.getExperience(), evaluation.getEvaluation());
+			evaluation.setScore(score);
 			evaluation.setLastAssessed(LocalDateTime.now(ZoneOffset.UTC));
 		}
 		evaluation = skillEvaluationRepository.save(evaluation);
@@ -99,31 +113,19 @@ public class SkillEvaluationServiceImpl implements SkillEvaluationService{
 			creatEvaluation.setSkillId(skillId);
 			creatEvaluation.setCareerManager(careerManager);
 			creatEvaluation.setCertificationStatus(1);
-			fields.forEach((k,v) -> {
-				Field field = ReflectionUtils.findField(SkillEvaluation.class, k.toString());
-				if(field==null) {
-					throw new FieldNotFoundException();
-				}
-				field.setAccessible(true);
-				if(v != null) {
-					ReflectionUtils.setField(field, creatEvaluation, getValueForType(field, v));
-				}
-			});
+			updateEvaluation(fields, creatEvaluation);
+			Integer score = getSkillScore(skillId, creatEvaluation.getExperience(), creatEvaluation.getEvaluation());
+			creatEvaluation.setScore(score);
 			creatEvaluation.setLastAssessed(LocalDateTime.now(ZoneOffset.UTC));
-			return this.modelMapper.map(skillEvaluationRepository.save(creatEvaluation), SkillEvaluationResponse.class);
+			creatEvaluation = skillEvaluationRepository.save(creatEvaluation);
+			return this.modelMapper.map(creatEvaluation, SkillEvaluationResponse.class);
 		} else {
-			fields.forEach((k,v) -> {
-				Field field = ReflectionUtils.findField(SkillEvaluation.class, k.toString());
-				if(field==null) {
-					throw new FieldNotFoundException();
-				}
-				field.setAccessible(true);
-				if(v != null) {
-					ReflectionUtils.setField(field, evaluation, getValueForType(field, v));
-				}
-			});
+			updateEvaluation(fields, evaluation);
+			Integer score = getSkillScore(skillId, evaluation.getExperience(), evaluation.getEvaluation());
+			evaluation.setScore(score);
 			evaluation.setLastAssessed(LocalDateTime.now(ZoneOffset.UTC));
-			return this.modelMapper.map(skillEvaluationRepository.save(evaluation), SkillEvaluationResponse.class);
+			evaluation = skillEvaluationRepository.save(evaluation);
+			return this.modelMapper.map(evaluation, SkillEvaluationResponse.class);
 		}		
 	}
 
@@ -149,30 +151,49 @@ public class SkillEvaluationServiceImpl implements SkillEvaluationService{
 		SkillEvaluation evaluation = skillEvaluationRepository.findBySkillIdAndUserId(skillId, userId);
 		if(evaluation == null) {
 			SkillEvaluation creatEvaluation = new SkillEvaluation();
-			fields.forEach((k,v) -> {
-				Field field = ReflectionUtils.findField(SkillEvaluation.class, k.toString());
-				if(field==null) {
-					throw new FieldNotFoundException();
-				}
-				field.setAccessible(true);
-				if(v != null) {
-					ReflectionUtils.setField(field, creatEvaluation, getValueForType(field, v));
-				}
-			});
-			return this.modelMapper.map(skillEvaluationRepository.save(creatEvaluation), SkillEvaluationResponse.class);
+			updateEvaluation(fields, creatEvaluation);
+			Integer score = getSkillScore(skillId, creatEvaluation.getExperience(), creatEvaluation.getEvaluation());
+			creatEvaluation.setScore(score);
+			creatEvaluation = skillEvaluationRepository.save(creatEvaluation);
+			return this.modelMapper.map(creatEvaluation, SkillEvaluationResponse.class);
 		} else {
-			fields.forEach((k,v) -> {
-				Field field = ReflectionUtils.findField(SkillEvaluation.class, k.toString());
-				if(field==null) {
-					throw new FieldNotFoundException();
-				}
-				field.setAccessible(true);
-				if(v != null) {
-					ReflectionUtils.setField(field, evaluation, getValueForType(field, v));
-				}
-			});
-			return this.modelMapper.map(skillEvaluationRepository.save(evaluation), SkillEvaluationResponse.class);
+			updateEvaluation(fields, evaluation);
+			Integer score = getSkillScore(skillId, evaluation.getExperience(), evaluation.getEvaluation());
+			evaluation.setScore(score);
+			evaluation = skillEvaluationRepository.save(evaluation);
+			return this.modelMapper.map(evaluation, SkillEvaluationResponse.class);
 		}
+	}
+
+	private Integer getSkillScore(Long skillId, Long experience, Long evaluation) {
+		if(experience != null && evaluation != null && experience > 0) {
+			Optional<Skill> skill = skillService.findById(skillId);
+			if(skill.isPresent()) {
+				Skill skillEntity = skill.get();
+				if(skillEntity.getDemandWeightage() != null && skillEntity.getSupplyWeightage() != null && skillEntity.getDemandWeightage() > 0 && skillEntity.getSupplyWeightage() > 0) {
+					return (int) (skillEntity.getDemandWeightage() * skillEntity.getSupplyWeightage() * evaluation * experience);
+				} else {
+					return 0;
+				}
+			} else {
+				return 0;
+			}
+		} else {
+			return 0;
+		}
+	}
+
+	private void updateEvaluation(Map<Object, Object> fields, SkillEvaluation creatEvaluation) {
+		fields.forEach((k,v) -> {
+			Field field = ReflectionUtils.findField(SkillEvaluation.class, k.toString());
+			if(field==null) {
+				throw new FieldNotFoundException();
+			}
+			field.setAccessible(true);
+			if(v != null) {
+				ReflectionUtils.setField(field, creatEvaluation, getValueForType(field, v));
+			}
+		});
 	}
 
 	@Override
@@ -189,6 +210,8 @@ public class SkillEvaluationServiceImpl implements SkillEvaluationService{
 				evaluation.setCertificationStatus(1);
 				evaluation.setLastAssessed(LocalDateTime.now(ZoneOffset.UTC));
 			}
+			Integer score = getSkillScore(evaluation.getSkillId(), evaluation.getExperience(), evaluation.getEvaluation());
+			evaluation.setScore(score);
 			this.skillEvaluationRepository.save(evaluation);		
 		});
 	}

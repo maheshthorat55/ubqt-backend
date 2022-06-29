@@ -47,6 +47,10 @@ public class UserServieceImpl implements UserService {
 				user.setReferanceUser(refUser.get());
 			}
 		}
+		user.setRedFlag(0);
+		user.setIsAvailable(1);
+		user.setAssessed(0);
+		user.setSkillScore(0);
 		return modelMapper.map(userRepository.save(user), UserResponse.class);
 	}
 

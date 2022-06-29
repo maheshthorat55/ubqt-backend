@@ -31,4 +31,6 @@ public interface SkillEvaluationService {
 	SkillEvaluationResponse updateSkillForUser(Long userId, Long skillId, Map<Object, Object> fields);
 
 	void addAll(@Valid List<SkillEvaluationRequest> skillEvaluationRequest);
+
+	void updateSkillScore(Long userId);
 }

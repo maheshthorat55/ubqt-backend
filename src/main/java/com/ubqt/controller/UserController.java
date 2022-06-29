@@ -1,9 +1,11 @@
 package com.ubqt.controller;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -76,13 +78,21 @@ public class UserController {
 	}
 	
 	@PostMapping("/search")
-	public ResponseEntity<List<User>> searchUserBySkillsAndExpert(@Valid @RequestBody UserSearchRequest userSearchRequest){
+	public ResponseEntity<List<User>> searchUserBySkillsAndExpert(
+			@Valid @RequestBody UserSearchRequest userSearchRequest) {
 		Set<Long> userIds = this.skillEvaluationService.getUserIdsHavingSkillsAndExperts(userSearchRequest.getSkills());
 		List<User> users = null;
-		if(userSearchRequest.getAssessed() == 0) {
+		if (userSearchRequest.getAssessed() == 0) {
 			users = this.userService.getAllUsers(userIds);
 		} else {
 			users = this.userService.getAllUsersAndAssessd(userIds, userSearchRequest.getAssessed());
+		}
+		if (userSearchRequest.getIsAvailable() == 1) {
+			users = users.stream().filter(u -> u.getIsAvailable() == 1 && u.getRedFlag() == 0)
+					.sorted(Comparator.comparing(User::getSkillScore).reversed()).collect(Collectors.toList());
+		} else {
+			users = users.stream().filter(u -> u.getRedFlag() == 0)
+					.sorted(Comparator.comparing(User::getSkillScore).reversed()).collect(Collectors.toList());
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(users);
 	}

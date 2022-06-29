@@ -21,4 +21,8 @@ public interface ClientService {
 
 	List<Client> findAll();
 
+	void deleteById(Long clientId);
+
+	void deleteByPhoneNumber(String phoneNumber);
+
 }

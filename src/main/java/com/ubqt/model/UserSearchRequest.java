@@ -15,4 +15,6 @@ public class UserSearchRequest {
 	private List<SearchSkill> skills;
 	@Builder.Default
 	private int assessed=0;
+	@Builder.Default
+	private int isAvailable=0;
 }

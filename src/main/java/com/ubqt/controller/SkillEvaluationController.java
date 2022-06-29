@@ -42,7 +42,9 @@ public class SkillEvaluationController {
 
 	@PostMapping
 	public ResponseEntity<SkillEvaluationResponse> save(@Valid @RequestBody SkillEvaluationRequest skillEvaluationRequest) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(skillEvaluationService.save(skillEvaluationRequest));
+		SkillEvaluationResponse skillEvaluationResponse = skillEvaluationService.save(skillEvaluationRequest);
+		this.skillEvaluationService.updateSkillScore(skillEvaluationRequest.getUserId());
+		return ResponseEntity.status(HttpStatus.CREATED).body(skillEvaluationResponse);
 	}
 	
 	@PutMapping("/certify/{managerId}")
@@ -56,6 +58,7 @@ public class SkillEvaluationController {
 				user.setAssessed(1);
 				user.setLastAssessed(LocalDateTime.now(ZoneOffset.UTC));
 				this.userService.updateUser(user);
+				this.skillEvaluationService.updateSkillScore(skillEvaluationRequest.getUserId());
 			}
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 		} else {
@@ -75,6 +78,7 @@ public class SkillEvaluationController {
 				user.setAssessed(1);
 				user.setLastAssessed(LocalDateTime.now(ZoneOffset.UTC));
 				this.userService.updateUser(user);
+				this.skillEvaluationService.updateSkillScore(userId);
 			}
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 		} else {
@@ -86,6 +90,7 @@ public class SkillEvaluationController {
 	public ResponseEntity<SkillEvaluationResponse> updateSkillForUser(@PathVariable Long userId, @PathVariable Long skillId, 
 				@RequestBody Map<Object, Object> fields) {
 			SkillEvaluationResponse response = this.skillEvaluationService.updateSkillForUser(userId, skillId, fields);
+			this.skillEvaluationService.updateSkillScore(userId);
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	

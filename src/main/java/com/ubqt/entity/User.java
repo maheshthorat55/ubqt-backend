@@ -53,8 +53,9 @@ public class User {
 	@ColumnDefault(value = "0")
 	private Integer assessed;
 	
+	@ColumnDefault(value = "0")
 	private Integer skillScore;
-	
+		
 	@OneToOne
 	@JoinColumn(name = "referance_user", table = "user")
 	@JsonBackReference

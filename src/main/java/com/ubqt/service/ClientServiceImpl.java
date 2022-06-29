@@ -62,4 +62,17 @@ public class ClientServiceImpl implements ClientService {
 		return this.clientRepository.findAll();
 	}
 
+	@Override
+	public void deleteById(Long clientId) {
+		this.clientRepository.deleteById(clientId);
+	}
+
+	@Override
+	public void deleteByPhoneNumber(String phoneNumber) {
+		Optional<Client> oClient = findByMobileNumber(phoneNumber);
+		if(oClient.isPresent()) {
+			this.clientRepository.delete(oClient.get());
+		}
+	}
+
 }

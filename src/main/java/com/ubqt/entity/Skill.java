@@ -37,6 +37,8 @@ public class Skill implements Serializable {
 	private String name;
 	private Integer demand;
 	private Integer supply;
+	private Integer demandWeightage;
+	private Integer supplyWeightage;
 	private String shortName;
 	private String aliesName;
 	private String about;
